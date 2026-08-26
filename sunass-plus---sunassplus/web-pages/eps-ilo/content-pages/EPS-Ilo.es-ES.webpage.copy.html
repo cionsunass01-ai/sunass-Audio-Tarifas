@@ -1,0 +1,505 @@
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><!-- Application Structure Plan: The SPA mirrors the official SUNASS regulatory fact sheet (ficha resumen, 4-page infographic format) for EPS ILO S.A. Sections: 1) Datos Generales — notable: tercera EP de este catálogo bajo el Régimen de Apoyo Transitorio de OTASS (tras EPSEL y EMAPA San Martín), clasificada "Mediana" (un nivel de tamaño nuevo respecto a las fichas anteriores) y atiende una sola localidad, Ilo, en la región Moquegua. 2) Diagnósticos — ANF de 42% (a diferencia de otras EPS recientes sin este dato disponible); el 100% de PTAR corresponde únicamente a la PTAR Media Luna, no a toda la EP; deuda declarada como obligación total (S/53.5 millones) en vez de un pago anual; solo incrementos por IPM aplicados (sin fórmula tarifaria en el resumen reciente). 3) Inversión y Costos O&M — distribución por finalidad del programa AP y Saneamiento con 7 categorías que suman exactamente 100%. 4) Metas de Gestión y Tarifas — a diferencia de varias fichas anteriores, aquí sí se revelan valores numéricos de continuidad (17 h/d) y presión (28 m.c.a.) a nivel de localidad; el avance financiero del programa de inversiones solo mostró 3 de los 4 valores anuales con claridad en la ficha (Año 1 no se pudo determinar), por lo que se omite ese punto en vez de inventarlo. No "Mi Recibo" bill calculator incluido: esta ficha solo entrega tarifas promedio (S//m3). --><!-- CONFIRMATION: NO SVG graphics used beyond inline icon paths already present in the shared header/nav markup. NO Mermaid JS used. --><title>Panel Interactivo: Ficha Regulatoria EPS Ilo 2025-2028</title>
+<style>
+  :root {
+    --navy: #0B2341;
+    --navy-light: #0F3460;
+    --cyan-accent: #00BCD4;
+    --cyan-light: #E0F7FA;
+    --sunass-blue: #0071CE;
+    --sunass-dark-blue: #005B9F;
+    --sunass-green: #5DB92E;
+    --bg-page: #ebf7ff;
+  }
+  body { background-color: var(--bg-page) !important; font-family: 'Inter', sans-serif; }
+
+  .glass-card {
+    background: #ffffff !important;
+    border: 1px solid #E8ECF1;
+    border-left: 4px solid var(--cyan-accent) !important;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+    transition: box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+  .glass-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+    border-color: #D0D5DD;
+    border-left-color: var(--sunass-blue) !important;
+    transform: none;
+  }
+
+  .header-bg {
+    background: rgba(247, 251, 252, 0.92) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid #E0E7EE !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04) !important;
+  }
+
+  .text-sunass { color: var(--sunass-blue) !important; }
+  .bg-sunass { background-color: var(--sunass-blue) !important; }
+
+  h1[style*="--portalThemeColor"],
+  h2[style*="--portalThemeColor"],
+  h3[style*="--portalThemeColor"],
+  p[style*="--portalThemeColor"] {
+    color: #1e293b !important;
+  }
+  section h2 { color: #1e293b !important; }
+  section > p { color: #475569 !important; }
+
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table th, .data-table td { padding: 0.6rem 0.75rem; text-align: center; font-size: 0.875rem; }
+  .data-table thead th { background-color: #0F3460; color: #ffffff; font-weight: 600; }
+  .data-table tbody tr:nth-child(even) { background-color: #F1F8FB; }
+  .data-table td:first-child, .data-table th:first-child { text-align: left; font-weight: 600; color: #1e293b; }
+
+  .alert-card { background: #FFF7ED !important; border: 1px solid #FED7AA; border-left: 4px solid #EA580C !important; border-radius: 12px; }
+</style>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" /><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+<header class="header-bg sticky top-0 z-50">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <h1 class="text-xl md:text-2xl font-bold" style="color: var(--navy)">EPS ILO S.A.</h1>
+      <nav class="hidden md:flex space-x-6"><a onclick="scrollToSection('datos-generales')" class="nav-link text-slate-700 opacity-80 hover:opacity-100 hover:text-blue-700 font-medium border-b-2 border-transparent pb-1" style="cursor:pointer;">Datos Generales</a><a onclick="scrollToSection('diagnosticos')" class="nav-link text-slate-700 opacity-80 hover:opacity-100 hover:text-blue-700 font-medium border-b-2 border-transparent pb-1" style="cursor:pointer;">Diagnósticos</a><a onclick="scrollToSection('inversion')" class="nav-link text-slate-700 opacity-80 hover:opacity-100 hover:text-blue-700 font-medium border-b-2 border-transparent pb-1" style="cursor:pointer;">Inversión y O&amp;M</a><a onclick="scrollToSection('metas-tarifas')" class="nav-link text-slate-700 opacity-80 hover:opacity-100 hover:text-blue-700 font-medium border-b-2 border-transparent pb-1" style="cursor:pointer;">Metas y Tarifas</a></nav>
+      <button id="mobile-menu-button" class="md:hidden text-slate-800">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+      </button>
+    </div>
+  </div>
+  <div id="mobile-menu" class="md:hidden hidden bg-white border-t"><a onclick="scrollToSection('datos-generales')" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-50">Datos Generales</a><a onclick="scrollToSection('diagnosticos')" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-50">Diagnósticos</a><a onclick="scrollToSection('inversion')" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-50">Inversión y O&amp;M</a><a onclick="scrollToSection('metas-tarifas')" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-50">Metas y Tarifas</a></div>
+</header>
+
+<main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+  <section id="datos-generales" class="mb-16 scroll-mt-20">
+    <h2 class="text-3xl font-bold text-slate-900 mb-2" style="color: var(--portalThemeColor7);">Ficha Regulatoria 2025-2028</h2>
+    <p class="text-lg text-slate-600 mb-8 max-w-3xl">Datos generales de la EPS ILO S.A. según el estudio tarifario aprobado por SUNASS para el periodo regulatorio 2025-2028, en la localidad de Ilo (región Moquegua).</p>
+
+    <div class="alert-card p-6 rounded-2xl mb-8">
+      <ul class="space-y-2 text-slate-700 text-sm md:text-base">
+        <li class="flex items-start"><i class="fa-solid fa-triangle-exclamation text-orange-600 mr-3 mt-1 w-4 text-center"></i>Mediante Resolución Ministerial N° 043-2016-VIVIENDA, se ratifica el acuerdo de OTASS que declara el inicio del <strong>Régimen de Apoyo Transitorio</strong> de la EP.</li>
+        <li class="flex items-start"><i class="fa-solid fa-file-signature text-orange-600 mr-3 mt-1 w-4 text-center"></i>El estudio tarifario de la EPS ILO S.A. fue aprobado mediante la Resolución de Consejo Directivo Nº 00084-2024-SUNASS-CD y publicada en el Diario Oficial El Peruano el 28 de diciembre de 2024.</li>
+      </ul>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      <div class="stat-card glass-card p-6 rounded-2xl">
+        <h3 class="text-slate-500 text-sm font-medium">Localidad</h3>
+        <p class="text-2xl font-bold mt-2">Ilo</p>
+        <p class="text-xs text-slate-400 mt-1">Región Moquegua</p>
+      </div>
+      <div class="stat-card glass-card p-6 rounded-2xl">
+        <h3 class="text-slate-500 text-sm font-medium">Tamaño de Empresa</h3>
+        <p class="text-3xl font-bold mt-2">Mediana</p>
+        <p class="text-xs text-slate-400 mt-1">Clasificación SUNASS</p>
+      </div>
+      <div class="stat-card glass-card p-6 rounded-2xl">
+        <h3 class="text-slate-500 text-sm font-medium">Periodo Regulatorio</h3>
+        <p class="text-3xl font-bold mt-2">3 años</p>
+        <p class="text-xs text-slate-400 mt-1">2025 - 2028</p>
+      </div>
+      <div class="stat-card glass-card p-6 rounded-2xl">
+        <h3 class="text-slate-500 text-sm font-medium">Nivel de Esquema Regulatorio</h3>
+        <p class="text-3xl font-bold mt-2">Inicial</p>
+        <p class="text-xs text-slate-400 mt-1">N.° de revisiones tarifarias periódicas: 3</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+      <div class="stat-card glass-card p-6 rounded-2xl" style="border-left-width: 4px; border-left-style: solid; border-left-color: #0071CE;">
+        <h3 class="text-slate-500 text-sm font-medium">Conexiones Totales de AP</h3>
+        <p class="text-3xl font-bold mt-2">31 903</p>
+        <p class="text-xs text-slate-400 mt-1">Agua potable</p>
+      </div>
+      <div class="stat-card glass-card p-6 rounded-2xl" style="border-left-width: 4px; border-left-style: solid; border-left-color: #0071CE;">
+        <h3 class="text-slate-500 text-sm font-medium">Conexiones Activas de AP</h3>
+        <p class="text-3xl font-bold mt-2">29 617</p>
+        <p class="text-xs text-slate-400 mt-1">93% del total</p>
+      </div>
+    </div>
+
+    <div class="glass-card rounded-2xl overflow-hidden overflow-x-auto">
+      <table class="data-table">
+        <thead><tr><th>Localidad</th><th>Conexiones Activas de AP (datos ago. 2024)</th><th>Continuidad (h/d)</th><th>Presión (m.c.a.)</th></tr></thead>
+        <tbody><tr><td>Ilo</td><td>29 617</td><td>17.22</td><td>28.70</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="diagnosticos" class="mb-16 scroll-mt-20">
+    <h2 class="text-3xl font-bold text-slate-900 mb-2">Diagnósticos</h2>
+    <p class="text-lg text-slate-600 mb-8 max-w-3xl">Situación operativa, comercial y económico-financiera de la empresa que sustenta el plan de inversiones.</p>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Diagnóstico Operativo</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      <div class="glass-card p-6 rounded-2xl text-center">
+        <h4 class="text-slate-500 text-sm font-medium mb-2">Cobertura de Agua Potable</h4>
+        <div class="chart-container h-32" style="position: relative; width: 100%;"><canvas id="covApChart"></canvas></div>
+        <p class="text-xs text-slate-400 mt-2">Población no coberturada: 5 496 habitantes.</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl text-center">
+        <h4 class="text-slate-500 text-sm font-medium mb-2">Cobertura de Alcantarillado</h4>
+        <div class="chart-container h-32" style="position: relative; width: 100%;"><canvas id="covSaneamientoChart"></canvas></div>
+        <p class="text-xs text-slate-400 mt-2">Población no coberturada: 6 946 habitantes.</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-slate-500 text-sm font-medium">Agua No Facturada (ANF)</h4>
+        <p class="text-3xl font-bold mt-2">42%</p>
+        <p class="text-xs text-slate-400 mt-1">A nivel EP</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-slate-500 text-sm font-medium">Aguas Residuales Tratadas (PTAR)</h4>
+        <p class="text-3xl font-bold mt-2">100%</p>
+        <p class="text-xs text-slate-400 mt-1">Esta información corresponde únicamente a la PTAR Media Luna, no a toda la EP.</p>
+      </div>
+    </div>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Diagnóstico Comercial</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      <div class="glass-card p-6 rounded-2xl">
+        <span class="text-cyan-600 text-2xl"><i class="fa-solid fa-hand-holding-dollar"></i></span>
+        <p class="text-3xl font-bold mt-2">99%</p>
+        <p class="text-xs text-slate-400 mt-1">Eficiencia de la recaudación (respecto a la facturación)</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <span class="text-cyan-600 text-2xl"><i class="fa-solid fa-plug-circle-xmark"></i></span>
+        <p class="text-3xl font-bold mt-2">7%</p>
+        <p class="text-xs text-slate-400 mt-1">Conexiones inactivas de AP</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <span class="text-cyan-600 text-2xl"><i class="fa-solid fa-map-location-dot"></i></span>
+        <p class="text-3xl font-bold mt-2">100%</p>
+        <p class="text-xs text-slate-400 mt-1">Catastro comercial</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <span class="text-cyan-600 text-2xl"><i class="fa-solid fa-users"></i></span>
+        <p class="text-3xl font-bold mt-2">Sí</p>
+        <p class="text-xs text-slate-400 mt-1">Focalización de subsidios (los subsidios cruzados de la EP ya contemplan instrumentos de focalización)</p>
+      </div>
+    </div>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Diagnóstico Económico-Financiero</h3>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+      <div class="lg:col-span-2 glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Ingresos y Costos Operativos 2019-2023 (millones de S/)</h4>
+        <div class="chart-container h-72" style="position: relative; width: 100%;"><canvas id="incomeCostChart"></canvas></div>
+        <p class="text-xs text-slate-400 mt-3">Ingresos: comprende ingresos por servicios de agua potable, saneamiento y cargo fijo.</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl space-y-4">
+        <div>
+          <p class="text-sm text-slate-500">Saldo inicial para financiamiento de inversiones</p>
+          <p class="text-2xl font-bold text-cyan-700">S/ 6.9 millones</p>
+        </div>
+        <div class="border-t border-slate-200 pt-4">
+          <p class="text-sm text-slate-500">Obligaciones financieras</p>
+          <p class="text-2xl font-bold text-cyan-700">S/ 53.5 millones</p>
+          <p class="text-xs text-slate-400 mt-1">La EP tiene obligaciones financieras por este monto total.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass-card p-6 rounded-2xl">
+      <h4 class="text-lg font-bold mb-4">Recientes Incrementos Tarifarios (2020-2025)</h4>
+      <p class="text-sm text-slate-600 mb-4">La EP ha aplicado seis incrementos por IPM, alcanzando un total acumulado de <strong>24%</strong> entre 2020 y 2025.</p>
+      <div class="overflow-x-auto">
+        <table class="data-table">
+          <thead><tr><th>Incremento</th><th>Monto</th><th>Estado</th></tr></thead>
+          <tbody>
+            <tr><td>IPM</td><td>3.74%</td><td>Aplicado</td></tr>
+            <tr><td>IPM</td><td>4.58%</td><td>Aplicado</td></tr>
+            <tr><td>IPM</td><td>3.39%</td><td>Aplicado</td></tr>
+            <tr><td>IPM</td><td>3.04%</td><td>Aplicado</td></tr>
+            <tr><td>IPM</td><td>3.10%</td><td>Aplicado</td></tr>
+            <tr><td>IPM</td><td>4.07%</td><td>Aplicado</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="inversion" class="mb-16 scroll-mt-20">
+    <h2 class="text-3xl font-bold text-slate-900 mb-2">Inversión y Costos O&amp;M</h2>
+    <p class="text-lg text-slate-600 mb-8 max-w-3xl">El Programa de Inversiones para el periodo regulatorio 2025-2028, financiado con recursos propios, asciende a <strong>S/ 24 102 923</strong>. Explore su distribución, el fondo que lo financia, los costos de operación y mantenimiento, y su relación con el cierre de brechas de largo plazo.</p>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Mediano Plazo (2025-2028)</h3>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Distribución por Finalidad (AP y Saneamiento)</h4>
+        <p class="text-sm text-slate-500 mb-4">Porcentajes respecto al programa de AP y Saneamiento (S/ 21 638 923).</p>
+        <div class="chart-container h-80" style="position: relative; width: 100%; margin-left: auto; margin-right: auto;"><canvas id="purposeChart"></canvas></div>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Monto Total del Programa de Inversiones</h4>
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div class="bg-slate-50 rounded-lg p-4 text-center"><p class="text-xs text-slate-500">AP y Saneamiento</p><p class="text-lg font-bold text-cyan-700">S/ 21.6 M</p></div>
+          <div class="bg-slate-50 rounded-lg p-4 text-center"><p class="text-xs text-slate-500">GRD y ACC</p><p class="text-lg font-bold text-cyan-700">S/ 1.05 M</p></div>
+          <div class="bg-slate-50 rounded-lg p-4 text-center"><p class="text-xs text-slate-500">MRSE</p><p class="text-lg font-bold text-cyan-700">S/ 0.92 M</p></div>
+          <div class="bg-slate-50 rounded-lg p-4 text-center"><p class="text-xs text-slate-500">PCC y PAS</p><p class="text-lg font-bold text-cyan-700">S/ 0.50 M</p></div>
+        </div>
+        <h5 class="font-semibold text-slate-700 mb-2">Fondo de Inversiones y Reservas (% de los ingresos)</h5>
+        <div class="overflow-x-auto">
+          <table class="data-table">
+            <thead><tr><th>Año</th><th>Fondo de Inversiones</th><th>Reservas</th></tr></thead>
+            <tbody>
+              <tr><td>Año 1</td><td>18.8%</td><td>6.4%</td></tr>
+              <tr><td>Año 2</td><td>18.9%</td><td>6.6%</td></tr>
+              <tr><td>Año 3</td><td>22.0%</td><td>6.2%</td></tr>
+              <tr><td>Año 4</td><td>21.0%</td><td>7.5%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Costos de Operación y Mantenimiento del Periodo</h4>
+        <div class="flex flex-wrap items-center justify-center gap-4 text-center">
+          <div class="bg-slate-50 rounded-lg p-4"><p class="text-xs text-slate-500">Costos actuales</p><p class="text-xl font-bold text-slate-700">S/ 32.5 millones</p></div>
+          <span class="text-2xl text-slate-400 font-bold">+</span>
+          <div class="bg-slate-50 rounded-lg p-4"><p class="text-xs text-slate-500">Incrementales reconocidos en la tarifa</p><p class="text-xl font-bold text-slate-700">S/ 3.3 millones</p></div>
+          <span class="text-2xl text-slate-400 font-bold">=</span>
+          <div class="bg-cyan-50 border border-cyan-200 rounded-lg p-4"><p class="text-xs text-cyan-700">Costo total para el periodo</p><p class="text-xl font-bold text-cyan-700">S/ 35.8 millones</p></div>
+        </div>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Cierre de Brechas de Largo Plazo (2025-2054)</h4>
+        <p class="text-center text-3xl font-bold text-cyan-700 mb-4">S/ 1 081 millones</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+          <div class="bg-slate-50 rounded-lg p-4">
+            <p class="font-semibold text-slate-700">Inversiones de cierre de brechas</p>
+            <p class="text-lg font-bold text-slate-800 mb-2">S/ 900 millones</p>
+            <ul class="text-xs text-slate-500 space-y-1">
+              <li>Mediano plazo: S/ 24 millones</li>
+              <li>Formuladas en el Invierte.pe: S/ 345 millones</li>
+              <li>Propuestas: S/ 531 millones</li>
+            </ul>
+          </div>
+          <div class="bg-slate-50 rounded-lg p-4">
+            <p class="font-semibold text-slate-700">Inversiones para mantener el cierre de brechas</p>
+            <p class="text-lg font-bold text-slate-800">S/ 181 millones</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="metas-tarifas" class="mb-16 scroll-mt-20">
+    <h2 class="text-3xl font-bold text-slate-900 mb-2">Metas de Gestión y Tarifas</h2>
+    <p class="text-lg text-slate-600 mb-8 max-w-3xl">Compromisos de gestión que la EPS ILO debe alcanzar durante el periodo regulatorio y su relación con el nivel y evolución de las tarifas.</p>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Metas a Nivel de Empresa Prestadora</h3>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Relación de Trabajo de la EP (%)</h4>
+        <div class="chart-container h-64" style="position: relative; width: 100%;"><canvas id="workingRatioChart"></canvas></div>
+        <p class="text-xs text-slate-400 mt-2">Una relación de trabajo menor indica menores costos operativos respecto a los ingresos.</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Avance Financiero del Programa de Inversiones (%)</h4>
+        <div class="chart-container h-64" style="position: relative; width: 100%;"><canvas id="advanceChart"></canvas></div>
+        <p class="text-xs text-slate-400 mt-2">El valor del Año 1 no se pudo determinar con claridad en la ficha.</p>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-6">
+      <div class="glass-card p-6 rounded-2xl text-center">
+        <h4 class="text-lg font-bold mb-2">Catastro Comercial</h4>
+        <div class="chart-container h-48" style="position: relative; width: 100%;"><canvas id="cadastreComChart"></canvas></div>
+        <p class="text-xs text-slate-400 mt-2">Meta a alcanzar en todo el periodo regulatorio</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl text-center">
+        <h4 class="text-lg font-bold mb-2">Catastro Técnico</h4>
+        <div class="chart-container h-48" style="position: relative; width: 100%;"><canvas id="cadastreTecChart"></canvas></div>
+        <p class="text-xs text-slate-400 mt-2">Meta a alcanzar en todo el periodo regulatorio</p>
+      </div>
+    </div>
+    <p class="text-xs text-slate-400 mb-10">Además de las metas de gestión de inversiones presentadas, el estudio tarifario también incluye metas de gestión para las reservas.</p>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Metas a Nivel de Localidad (Año 4)</h3>
+    <div class="overflow-x-auto mb-2">
+      <table class="data-table glass-card rounded-2xl overflow-hidden">
+        <thead><tr><th>Localidad</th><th>Reemplazo de Medidores (Total)</th><th>Continuidad (h/d)</th><th>Presión (m.c.a.)</th><th>Micromedición (%)</th></tr></thead>
+        <tbody><tr><td>Ilo</td><td>23 432</td><td>17</td><td>28</td><td>98</td></tr></tbody>
+      </table>
+    </div>
+    <p class="text-xs text-slate-400 mb-10">Nota: se muestran las metas de gestión del último año del periodo regulatorio para continuidad, presión y micromedición.</p>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Tarifas (S/ / m³, sin IGV)</h3>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+      <div class="glass-card p-6 rounded-2xl overflow-x-auto">
+        <h4 class="text-lg font-bold mb-4">Tarifa Media de Mediano Plazo vs. Costo Medio de Largo Plazo</h4>
+        <table class="data-table">
+          <thead><tr><th>Servicio</th><th>Tarifa Media MP</th><th>Costo Medio LP</th></tr></thead>
+          <tbody>
+            <tr><td>Agua Potable</td><td>3.58</td><td>11.61</td></tr>
+            <tr><td>Saneamiento</td><td>1.45</td><td>10.50</td></tr>
+            <tr><td>Total</td><td>5.03</td><td>22.11</td></tr>
+          </tbody>
+        </table>
+        <p class="text-xs text-slate-400 mt-3">El costo medio de largo plazo refleja el costo del servicio en un escenario sin brechas.</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl overflow-x-auto">
+        <h4 class="text-lg font-bold mb-4">Incrementos Tarifarios Programados</h4>
+        <table class="data-table mb-6">
+          <thead><tr><th>Año</th><th>Agua Potable</th><th>Saneamiento</th></tr></thead>
+          <tbody>
+            <tr><td>Año 1</td><td>11.0%</td><td>11.0%</td></tr>
+            <tr><td>Año 2</td><td>0.0%</td><td>0.0%</td></tr>
+            <tr><td>Año 3</td><td>11.3%</td><td>11.1%</td></tr>
+            <tr><td>Año 4</td><td>0.0%</td><td>0.0%</td></tr>
+          </tbody>
+        </table>
+        <h4 class="text-lg font-bold mb-4">Incrementos Adicionales por Reordenamiento Tarifario</h4>
+        <table class="data-table">
+          <thead><tr><th>Año</th><th>Agua Potable</th><th>Saneamiento</th></tr></thead>
+          <tbody>
+            <tr><td>Año 2</td><td>3.7%</td><td>3.7%</td></tr>
+            <tr><td>Año 4</td><td>2.3%</td><td>2.3%</td></tr>
+          </tbody>
+        </table>
+        <p class="text-xs text-slate-400 mt-3">Los subsidios cruzados de la EP ya contemplan instrumentos de focalización.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+
+      // Diagnóstico operativo: donuts de cobertura
+      function makeCoverageDonut(canvasId, value) {
+          new Chart(document.getElementById(canvasId).getContext('2d'), {
+              type: 'doughnut',
+              data: {
+                  labels: ['Cobertura', 'Resto'],
+                  datasets: [{
+                      data: [value, 100 - value],
+                      backgroundColor: ['#0891b2', '#E0F7FA'],
+                      borderWidth: 0
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  cutout: '72%',
+                  plugins: { legend: { display: false }, tooltip: { enabled: false } }
+              },
+              plugins: [{
+                  id: 'centerText' + canvasId,
+                  afterDraw: (chart) => {
+                      const { ctx, chartArea: { width, height, top, left } } = chart;
+                      ctx.save();
+                      ctx.font = 'bold 20px Inter, sans-serif';
+                      ctx.fillStyle = '#0F3460';
+                      ctx.textAlign = 'center';
+                      ctx.textBaseline = 'middle';
+                      ctx.fillText(value + '%', left + width / 2, top + height / 2);
+                      ctx.restore();
+                  }
+              }]
+          });
+      }
+      makeCoverageDonut('covApChart', 93.6);
+      makeCoverageDonut('covSaneamientoChart', 91.9);
+      makeCoverageDonut('cadastreComChart', 100);
+      makeCoverageDonut('cadastreTecChart', 100);
+
+      new Chart(document.getElementById('incomeCostChart').getContext('2d'), {
+          type: 'bar',
+          data: {
+              labels: ['2019', '2020', '2021', '2022', '2023'],
+              datasets: [
+                  { label: 'Ingresos', data: [9.3, 11, 12.5, 14.1, 16.1], backgroundColor: '#67e8f9' },
+                  { label: 'Costos y gastos desembolsables', data: [9.3, 9.7, 10.2, 12.5, 14.1], backgroundColor: '#0e7490' }
+              ]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: { y: { beginAtZero: true, ticks: { callback: (v) => 'S/ ' + v + 'M' } } },
+              plugins: {
+                  legend: { position: 'bottom' },
+                  tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: S/ ${ctx.parsed.y} millones` } }
+              }
+          }
+      });
+
+      // Distribución por finalidad del programa AP y Saneamiento (% del monto)
+      new Chart(document.getElementById('purposeChart').getContext('2d'), {
+          type: 'doughnut',
+          data: {
+              labels: ['Renovación de medidores', 'Mejoramiento de PTAP y PTAR', 'Mejoramiento del sistema de agua y saneamiento', 'Otros', 'Mejoramiento de captación', 'Creación y mejoramiento de oficinas de atención al cliente', 'Elaboración de Expediente Técnico'],
+              datasets: [{
+                  data: [32, 30, 15, 8, 7, 5, 3],
+                  backgroundColor: ['#0071CE', '#005B9F', '#00447A', '#0B2341', '#5DB92E', '#00BCD4', '#7AD34C'],
+                  borderColor: '#f8fafc',
+                  borderWidth: 2
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                  legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+                  tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.parsed}%` } }
+              }
+          }
+      });
+
+      // Metas EP: relación de trabajo
+      new Chart(document.getElementById('workingRatioChart').getContext('2d'), {
+          type: 'line',
+          data: {
+              labels: ['Año 1', 'Año 2', 'Año 3', 'Año 4'],
+              datasets: [{
+                  label: 'Relación de trabajo (%)',
+                  data: [77, 78, 74, 76],
+                  borderColor: '#0891b2',
+                  backgroundColor: '#0891b2',
+                  tension: 0.3,
+                  pointRadius: 5
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: { y: { suggestedMin: 72, suggestedMax: 79 } },
+              plugins: { legend: { display: false } }
+          }
+      });
+
+      // Metas EP: avance financiero del programa de inversiones (Año 1 sin dato claro en la ficha)
+      new Chart(document.getElementById('advanceChart').getContext('2d'), {
+          type: 'bar',
+          data: {
+              labels: ['Año 1', 'Año 2', 'Año 3', 'Año 4'],
+              datasets: [{
+                  label: 'Avance financiero (%)',
+                  data: [null, 34, 56, 100],
+                  backgroundColor: '#0891b2'
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: { y: { beginAtZero: true, max: 100, ticks: { callback: (v) => v + '%' } } },
+              plugins: { legend: { display: false } }
+          }
+      });
+
+      const mobileMenuButton = document.getElementById('mobile-menu-button');
+      const mobileMenu = document.getElementById('mobile-menu');
+      mobileMenuButton.addEventListener('click', () => { mobileMenu.classList.toggle('hidden'); });
+  });
+
+  function scrollToSection(sectionId) {
+      document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+      const mobileMenu = document.getElementById('mobile-menu');
+      if (!mobileMenu.classList.contains('hidden')) { mobileMenu.classList.add('hidden'); }
+  }
+</script>

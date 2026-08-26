@@ -1,0 +1,888 @@
+<div class="row sectionBlockLayout text-start" style="display: flex; flex-wrap: wrap; margin: 0px; min-height: auto; padding: 8px;">
+  <div class="container" style="padding: 0px; display: flex; flex-wrap: wrap;">
+    <div class="col-lg-12 columnBlockLayout" style="flex-grow: 1; display: flex; flex-direction: column; min-width: 250px; margin: 0px; padding: 0px;"><div class="row sectionBlockLayout" style="display: flex; flex-wrap: wrap; padding: 8px; margin: 0px; min-height: 15px;"></div></div>
+  </div>
+</div>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><!-- Chosen Palette: Ocean Blues (Blue, Sky) --><!-- Application Structure Plan: The SPA mirrors the official SUNASS regulatory fact sheet (ficha) for Aguas de Lima Norte. Sections: 1) Datos Generales (company/regulatory snapshot, per-locality: Huacho, Sayán, Végueta). 2) Diagnósticos (operational, commercial, economic-financial, incl. per-locality recent tariff increases). 3) Mi Recibo (personal bill calculator, per locality). 4) Inversión y Costos O&M (mid-term investment program + long-term gap-closing investments). 5) Metas de Gestión y Tarifas (EP and per-locality goals + tariff levels/increases, incl. per-locality reordenamiento tarifario). This mirrors the source document's own structure so every indicator in the fact sheet is traceable on the page. --><!-- Visualization & Content Choices: Stat cards for point-in-time figures, donut charts for coverage %, bar charts for investment/income-cost series, line/bar charts for multi-year goals, and plain tables for per-locality and tariff comparisons — matching the chart types used in the source fact sheet. --><!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. --><title>Panel Interactivo: Ficha Regulatoria Aguas de Lima Norte 2025-2029</title>
+<style>
+  :root {
+    --navy: #0B2341;
+    --navy-light: #0F3460;
+    --cyan-accent: #00BCD4;
+    --cyan-light: #E0F7FA;
+    --sunass-blue: #0071CE;
+    --sunass-dark-blue: #005B9F;
+    --sunass-green: #5DB92E;
+    --bg-page: #ebf7ff;
+  }
+  body { background-color: var(--bg-page) !important; font-family: 'Inter', sans-serif; }
+
+  /* Cards: estilo CAMI YAKU — fondo blanco, borde izquierdo cyan, sombra suave */
+  .glass-card {
+    background: #ffffff !important;
+    border: 1px solid #E8ECF1;
+    border-left: 4px solid var(--cyan-accent) !important;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+    transition: box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+  .glass-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+    border-color: #D0D5DD;
+    border-left-color: var(--sunass-blue) !important;
+    transform: none;
+  }
+
+  /* Header: fondo blanco translúcido estilo CAMI YAKU */
+  .header-bg {
+    background: rgba(247, 251, 252, 0.92) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid #E0E7EE !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04) !important;
+  }
+
+  .text-sunass { color: var(--sunass-blue) !important; }
+  .bg-sunass { background-color: var(--sunass-blue) !important; }
+
+  /* FIX: Override Power Pages portal theme color variables that cause white text */
+  h1[style*="--portalThemeColor"],
+  h2[style*="--portalThemeColor"],
+  h3[style*="--portalThemeColor"],
+  p[style*="--portalThemeColor"] {
+    color: #1e293b !important;
+  }
+  /* Ensure all section headings are dark and readable */
+  section h2 { color: #1e293b !important; }
+  section > p { color: #475569 !important; }
+
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table th, .data-table td { padding: 0.6rem 0.75rem; text-align: center; font-size: 0.875rem; }
+  .data-table thead th { background-color: #005B9F; color: #ffffff; font-weight: 600; }
+  .data-table tbody tr:nth-child(even) { background-color: #F1F8FB; }
+  .data-table td:first-child, .data-table th:first-child { text-align: left; font-weight: 600; color: #1e293b; }
+
+</style>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" /><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<header class="header-bg sticky top-0 z-50">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <h1 class="text-xl md:text-2xl font-bold" style="color: var(--navy)">Aguas de Lima Norte S.A.</h1>
+      <nav class="hidden md:flex space-x-6"><a onclick="scrollToSection('datos-generales')" class="nav-link text-slate-700 opacity-80 hover:opacity-100 hover:text-blue-700 font-medium border-b-2 border-transparent pb-1" style="transition-behavior: normal; transition-duration: 0.3s; transition-timing-function: ease; transition-delay: 0s; transition-property: all; cursor: pointer;">Datos Generales</a><a onclick="scrollToSection('diagnosticos')" class="nav-link text-slate-700 opacity-80 hover:opacity-100 hover:text-blue-700 font-medium border-b-2 border-transparent pb-1" style="transition-behavior: normal; transition-duration: 0.3s; transition-timing-function: ease; transition-delay: 0s; transition-property: all; cursor: pointer;">Diagnósticos</a><a onclick="scrollToSection('mi-recibo')" class="nav-link text-slate-700 opacity-80 hover:opacity-100 hover:text-blue-700 font-medium border-b-2 border-transparent pb-1" style="transition-behavior: normal; transition-duration: 0.3s; transition-timing-function: ease; transition-delay: 0s; transition-property: all; cursor: pointer;">Mi Recibo</a><a onclick="scrollToSection('inversion')" class="nav-link text-slate-700 opacity-80 hover:opacity-100 hover:text-blue-700 font-medium border-b-2 border-transparent pb-1" style="transition-behavior: normal; transition-duration: 0.3s; transition-timing-function: ease; transition-delay: 0s; transition-property: all; cursor: pointer;">Inversión y O&amp;M</a><a onclick="scrollToSection('metas-tarifas')" class="nav-link text-slate-700 opacity-80 hover:opacity-100 hover:text-blue-700 font-medium border-b-2 border-transparent pb-1" style="transition-behavior: normal; transition-duration: 0.3s; transition-timing-function: ease; transition-delay: 0s; transition-property: all; cursor: pointer;">Metas y Tarifas</a></nav>
+      <button id="mobile-menu-button" class="md:hidden text-slate-800">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+      </button>
+    </div>
+  </div>
+  <div id="mobile-menu" class="md:hidden hidden bg-white border-t"><a onclick="scrollToSection('datos-generales')" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-50">Datos Generales</a><a onclick="scrollToSection('diagnosticos')" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-50">Diagnósticos</a><a onclick="scrollToSection('mi-recibo')" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-50">Mi Recibo</a><a onclick="scrollToSection('inversion')" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-50">Inversión y O&amp;M</a><a onclick="scrollToSection('metas-tarifas')" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-50">Metas y Tarifas</a></div>
+</header>
+<main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+  <section id="datos-generales" class="mb-16 scroll-mt-20">
+    <h2 class="text-3xl font-bold text-slate-900 mb-2" style="color: var(--portalThemeColor7);">Ficha Regulatoria 2025-2029</h2>
+    <p class="text-lg text-slate-600 mb-8 max-w-3xl" style="color: var(--portalThemeColor7);">Datos generales de Aguas de Lima Norte S.A. según el estudio tarifario aprobado por SUNASS para el periodo regulatorio 2025-2029, que atiende las localidades de Huacho, Sayán y Végueta (región Lima).</p>
+
+    <div class="glass-card p-6 rounded-2xl mb-8">
+      <ul class="space-y-2 text-slate-700 text-sm md:text-base">
+        <li class="flex items-start"><i class="fa-solid fa-scale-balanced text-[#0071CE] mr-3 mt-1 w-4 text-center"></i>La EP no se encuentra en Régimen de Apoyo Transitorio.</li>
+        <li class="flex items-start"><i class="fa-solid fa-file-signature text-[#0071CE] mr-3 mt-1 w-4 text-center"></i>El estudio tarifario de AGUAS DE LIMA NORTE S.A. fue aprobado mediante la Resolución de Consejo Directivo N° 00083-2024-SUNASS-CD y publicada en el Diario Oficial El Peruano el 28 de diciembre de 2024.</li>
+      </ul>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      <div class="stat-card glass-card p-6 rounded-2xl">
+        <h3 class="text-slate-500 text-sm font-medium">Localidades</h3>
+        <p class="text-2xl font-bold mt-2">Huacho · Sayán · Végueta</p>
+        <p class="text-xs text-slate-400 mt-1">Región Lima</p>
+      </div>
+      <div class="stat-card glass-card p-6 rounded-2xl">
+        <h3 class="text-slate-500 text-sm font-medium">Tamaño de Empresa</h3>
+        <p class="text-3xl font-bold mt-2">Mediana</p>
+        <p class="text-xs text-slate-400 mt-1">Clasificación SUNASS</p>
+      </div>
+      <div class="stat-card glass-card p-6 rounded-2xl">
+        <h3 class="text-slate-500 text-sm font-medium">Periodo Regulatorio</h3>
+        <p class="text-3xl font-bold mt-2">4 años</p>
+        <p class="text-xs text-slate-400 mt-1">2025 - 2029</p>
+      </div>
+      <div class="stat-card glass-card p-6 rounded-2xl">
+        <h3 class="text-slate-500 text-sm font-medium">Nivel de Esquema Regulatorio</h3>
+        <p class="text-3xl font-bold mt-2">Inicial</p>
+        <p class="text-xs text-slate-400 mt-1">N.° de revisiones tarifarias periódicas: 4</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+      <div class="stat-card glass-card p-6 rounded-2xl" style="border-left-width: 4px; border-left-style: solid; border-left-color: #0071CE;">
+        <h3 class="text-slate-500 text-sm font-medium">Conexiones Totales de AP</h3>
+        <p class="text-3xl font-bold mt-2">34 715</p>
+        <p class="text-xs text-slate-400 mt-1">Agua potable</p>
+      </div>
+      <div class="stat-card glass-card p-6 rounded-2xl" style="border-left-width: 4px; border-left-style: solid; border-left-color: #0071CE;">
+        <h3 class="text-slate-500 text-sm font-medium">Conexiones Activas de AP</h3>
+        <p class="text-3xl font-bold mt-2">28 886</p>
+        <p class="text-xs text-slate-400 mt-1">Total EP</p>
+      </div>
+    </div>
+
+    <div class="glass-card rounded-2xl overflow-hidden overflow-x-auto">
+      <table class="data-table">
+        <thead><tr><th>Localidad</th><th>Conexiones Activas Totales (jun. 2024)</th><th>Continuidad (h/d)</th><th>Presión (m.c.a.)</th></tr></thead>
+        <tbody>
+          <tr><td>Huacho</td><td>24 449</td><td>12.2</td><td>14.7</td></tr>
+          <tr><td>Sayán</td><td>2 414</td><td>22.4</td><td>23.6</td></tr>
+          <tr><td>Végueta</td><td>3 023</td><td>24.0</td><td>25.1</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="diagnosticos" class="mb-16 scroll-mt-20">
+    <h2 class="text-3xl font-bold text-slate-900 mb-2" style="color: var(--portalThemeColor7);">Diagnósticos</h2>
+    <p class="text-lg text-slate-600 mb-8 max-w-3xl" style="color: var(--portalThemeColor7);">Situación operativa, comercial y económico-financiera de la empresa que sustenta el plan de inversiones.</p>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Diagnóstico Operativo</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      <div class="glass-card p-6 rounded-2xl text-center">
+        <h4 class="text-slate-500 text-sm font-medium mb-2">Cobertura de Agua Potable</h4>
+        <div class="chart-container h-32" style="position: relative; width: 100%;"><canvas id="covApChart"></canvas></div>
+        <p class="text-xs text-slate-400 mt-2">Población no coberturada: 28 223 hab.</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl text-center">
+        <h4 class="text-slate-500 text-sm font-medium mb-2">Cobertura de Alcantarillado</h4>
+        <div class="chart-container h-32" style="position: relative; width: 100%;"><canvas id="covSaneamientoChart"></canvas></div>
+        <p class="text-xs text-slate-400 mt-2">Cobertura sanitaria a nivel EP</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-slate-500 text-sm font-medium">Agua No Facturada (ANF)</h4>
+        <p class="text-3xl font-bold mt-2 text-slate-400">S.I.</p>
+        <p class="text-xs text-slate-400 mt-1">Sin información a nivel EP</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-slate-500 text-sm font-medium">Aguas Residuales Tratadas (PTAR)</h4>
+        <p class="text-3xl font-bold mt-2">0%</p>
+        <p class="text-xs text-slate-400 mt-1">Porcentaje que va a una PTAR</p>
+      </div>
+    </div>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Diagnóstico Comercial</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      <div class="glass-card p-6 rounded-2xl">
+        <span class="text-[#0071CE] text-2xl"><i class="fa-solid fa-hand-holding-dollar"></i></span>
+        <p class="text-3xl font-bold mt-2">99.5%</p>
+        <p class="text-xs text-slate-400 mt-1">Eficiencia de la recaudación (respecto a la facturación)</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <span class="text-[#0071CE] text-2xl"><i class="fa-solid fa-plug-circle-xmark"></i></span>
+        <p class="text-3xl font-bold mt-2">13.9%</p>
+        <p class="text-xs text-slate-400 mt-1">Conexiones inactivas de AP</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <span class="text-[#0071CE] text-2xl"><i class="fa-solid fa-map-location-dot"></i></span>
+        <p class="text-3xl font-bold mt-2">81%</p>
+        <p class="text-xs text-slate-400 mt-1">Catastro comercial</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <span class="text-[#0071CE] text-2xl"><i class="fa-solid fa-users"></i></span>
+        <p class="text-3xl font-bold mt-2">Sí</p>
+        <p class="text-xs text-slate-400 mt-1">Focalización de subsidios (subsidios cruzados)</p>
+      </div>
+    </div>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Diagnóstico Económico-Financiero</h3>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+      <div class="lg:col-span-2 glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Ingresos y Costos Operativos 2019-2023 (millones de S/)</h4>
+        <div class="chart-container h-72" style="position: relative; width: 100%;"><canvas id="incomeCostChart"></canvas></div>
+        <p class="text-xs text-slate-400 mt-3">Ingresos: comprende ingresos por servicios de agua potable, saneamiento y cargo fijo.</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl space-y-4">
+        <div>
+          <p class="text-sm text-slate-500">Saldo inicial para financiamiento de inversiones</p>
+          <p class="text-2xl font-bold text-[#0071CE]">S/ 1.13 millones</p>
+        </div>
+        <div class="border-t border-slate-200 pt-4">
+          <p class="text-sm text-slate-500">Obligaciones financieras programadas (próximo periodo)</p>
+          <p class="text-2xl font-bold text-[#0071CE]">S/ 2.9 millones</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass-card p-6 rounded-2xl">
+      <h4 class="text-lg font-bold mb-4">Recientes Incrementos Tarifarios (2019-2024)</h4>
+      <p class="text-sm text-slate-600 mb-4">La EP aplicó un incremento por fórmula tarifaria y seis incrementos por IPM.</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="bg-slate-50 rounded-lg p-4 text-center">
+          <p class="text-xs text-slate-500">Huacho</p>
+          <p class="text-2xl font-bold text-[#0071CE]">33.59%</p>
+          <p class="text-xs text-slate-400 mt-1">Incremento inicial por fórmula tarifaria: 8%</p>
+        </div>
+        <div class="bg-slate-50 rounded-lg p-4 text-center">
+          <p class="text-xs text-slate-500">Sayán y Végueta</p>
+          <p class="text-2xl font-bold text-[#0071CE]">29.88%</p>
+          <p class="text-xs text-slate-400 mt-1">Incremento inicial por fórmula tarifaria: 5%</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="mi-recibo" class="mb-16 scroll-mt-20">
+    <h2 class="text-3xl font-bold text-slate-900 mb-2" style="color: var(--portalThemeColor7);">¿Cómo Cambiará su Factura?</h2>
+    <p class="text-lg text-slate-600 mb-8 max-w-3xl" style="color: var(--portalThemeColor7);">Use este calculador interactivo para estimar el impacto de las nuevas tarifas en su factura mensual. Los ajustes permitirán financiar las mejoras necesarias en el servicio. Los incrementos principales se aplicarán en el primer y tercer año del período regulatorio.</p>
+    <div class="glass-card p-6 md:p-8 rounded-2xl grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div>
+        <h3 class="text-xl font-bold mb-4">Calcule su Nueva Factura</h3>
+        <div class="space-y-4">
+          <div>
+            <label for="userLocation" class="block text-sm font-medium text-slate-700">1. Seleccione su localidad:</label
+            ><select id="userLocation" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+              <option value="huacho" selected="">Huacho</option>
+              <option value="sayan_vegueta">Sayán y Végueta</option>
+            </select>
+          </div>
+          <div>
+            <label for="userCategory" class="block text-sm font-medium text-slate-700">2. Seleccione su categoría:</label
+            ><select id="userCategory" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+              <option value="domestico_no_subsidiado" selected="">Doméstico (No Beneficiario)</option>
+              <option value="domestico_subsidiado">Doméstico (Beneficiario Subsidio)</option>
+              <option value="social">Social</option>
+              <option value="comercial">Comercial y Otros</option>
+              <option value="estatal">Estatal</option>
+              <option value="industrial">Industrial</option>
+            </select>
+          </div>
+          <div><label for="consumption" class="block text-sm font-medium text-slate-700">3. Ingrese su consumo mensual (m³):</label><input type="number" id="consumption" value="16" class="mt-1 block w-full pl-3 pr-3 py-2 text-base border-slate-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md" /></div>
+        </div>
+        <div id="subsidy-info" class="mt-6 p-4 bg-[#f4f6f9] border border-[#0071CE]\/20 rounded-md hidden">
+          <h4 class="font-semibold text-[#005B9F]">Sobre el Subsidio Focalizado</h4>
+          <p class="text-sm text-[#0071CE] mt-1">Este beneficio se aplica a los primeros 8 m³ de consumo para hogares clasificados como pobres o pobres extremos por el SISFOH, o ubicados en manzanas de ingresos bajos o medio-bajos según el INEI, para ayudar a cubrir sus necesidades básicas.</p>
+        </div>
+      </div>
+      <div class="bg-slate-50 p-6 rounded-lg">
+        <h3 class="text-xl font-bold mb-4">Estimación de la Factura Mensual (inc. IGV)</h3>
+        <div class="space-y-4">
+          <div>
+            <p class="text-sm text-slate-500">Factura Actual (Estimada)</p>
+            <p id="currentBill" class="text-2xl font-bold text-slate-600">S/ 0.00</p>
+          </div>
+          <div class="border-t border-slate-200 pt-4">
+            <p class="text-sm text-[#0071CE] font-semibold">Nueva Factura - Año 1 (2025)</p>
+            <p id="newBill1" class="text-3xl font-bold text-[#0071CE]">S/ 0.00</p>
+          </div>
+          <div class="border-t border-slate-200 pt-4">
+            <p class="text-sm text-[#0071CE] font-semibold">Nueva Factura - Año 3 (2027)</p>
+            <p id="newBill3" class="text-3xl font-bold text-[#0071CE]">S/ 0.00</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="inversion" class="mb-16 scroll-mt-20">
+    <h2 class="text-3xl font-bold text-slate-900 mb-2" style="color: var(--portalThemeColor7);">Inversión y Costos O&amp;M</h2>
+    <p class="text-lg text-slate-600 mb-8 max-w-3xl" style="color: var(--portalThemeColor7);">El Programa de Inversiones para el periodo regulatorio 2025-2029, financiado con recursos propios, asciende a <strong>S/ 36 151 810</strong>. Explore su distribución, el fondo que lo financia, los costos de operación y mantenimiento, y su relación con el cierre de brechas de largo plazo.</p>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Mediano Plazo (2025-2029)</h3>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+      <div class="lg:col-span-1 glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Por Categoría de Inversión</h4>
+        <div class="chart-container h-80" style="position: relative; width: 100%; margin-left: auto; margin-right: auto;"><canvas id="investmentBreakdownChart"></canvas></div>
+      </div>
+      <div class="lg:col-span-2 glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Proyectos Clave</h4>
+        <div id="project-list" class="space-y-4 max-h-[400px] overflow-y-auto pr-2"></div>
+        <p class="text-xs text-slate-400 mt-3">Del total de S/ 36.15 millones, S/ 741,525 corresponden a "Reposición de equipos" (ver gráfico) sin proyectos individuales identificables en el documento.</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Distribución por Finalidad</h4>
+        <p class="text-sm text-slate-500 mb-4">Porcentajes respecto a los ingresos facturados (sin IGV ni IPM).</p>
+        <div class="chart-container h-72" style="position: relative; width: 100%;"><canvas id="purposeChart"></canvas></div>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Monto Total del Programa de Inversiones</h4>
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div class="bg-slate-50 rounded-lg p-4 text-center"><p class="text-xs text-slate-500">AP y Saneamiento</p><p class="text-xl font-bold text-[#0071CE]">S/ 33 451 386</p></div>
+          <div class="bg-slate-50 rounded-lg p-4 text-center"><p class="text-xs text-slate-500">MRSE</p><p class="text-xl font-bold text-[#0071CE]">S/ 1 588 914</p></div>
+          <div class="bg-slate-50 rounded-lg p-4 text-center"><p class="text-xs text-slate-500">GRD y ACC</p><p class="text-xl font-bold text-[#0071CE]">S/ 966 510</p></div>
+          <div class="bg-slate-50 rounded-lg p-4 text-center"><p class="text-xs text-slate-500">PCC y PAS</p><p class="text-xl font-bold text-[#0071CE]">S/ 145 000</p></div>
+        </div>
+        <h5 class="font-semibold text-slate-700 mb-2">Fondo de Inversiones y Reservas (% de los ingresos)</h5>
+        <div class="overflow-x-auto">
+          <table class="data-table">
+            <thead><tr><th>Año</th><th>Fondo de Inversiones</th><th>Reservas</th></tr></thead>
+            <tbody>
+              <tr><td>Año 1</td><td>19.5%</td><td>5.24%</td></tr>
+              <tr><td>Año 2</td><td>17.6%</td><td>8.04%</td></tr>
+              <tr><td>Año 3</td><td>26.6%</td><td>6.34%</td></tr>
+              <tr><td>Año 4</td><td>27.1%</td><td>5.83%</td></tr>
+              <tr><td>Año 5</td><td>26.1%</td><td>5.13%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Costos de Operación y Mantenimiento del Periodo</h4>
+        <div class="flex flex-wrap items-center justify-center gap-4 text-center">
+          <div class="bg-slate-50 rounded-lg p-4"><p class="text-xs text-slate-500">Costos actuales</p><p class="text-xl font-bold text-slate-700">S/ 38.3 millones</p></div>
+          <span class="text-2xl text-slate-400 font-bold">+</span>
+          <div class="bg-slate-50 rounded-lg p-4"><p class="text-xs text-slate-500">Incrementales reconocidos en la tarifa</p><p class="text-xl font-bold text-slate-700">S/ 5.1 millones</p></div>
+          <span class="text-2xl text-slate-400 font-bold">=</span>
+          <div class="bg-cyan-50 border border-cyan-200 rounded-lg p-4"><p class="text-xs text-[#005B9F]">Costo total para el periodo</p><p class="text-xl font-bold text-[#005B9F]">S/ 43.3 millones</p></div>
+        </div>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Cierre de Brechas de Largo Plazo (2025-2054)</h4>
+        <p class="text-center text-3xl font-bold text-[#0071CE] mb-4">S/ 1 228.6 millones</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+          <div class="bg-slate-50 rounded-lg p-4">
+            <p class="font-semibold text-slate-700">Inversiones de cierre de brechas</p>
+            <p class="text-lg font-bold text-slate-800 mb-2">S/ 1 061.8 millones</p>
+            <ul class="text-xs text-slate-500 space-y-1">
+              <li>Mediano plazo: S/ 36.2 millones</li>
+              <li>Formuladas en el Invierte.pe: S/ 354.0 millones</li>
+              <li>Propuestas: S/ 671.6 millones</li>
+            </ul>
+          </div>
+          <div class="bg-slate-50 rounded-lg p-4">
+            <p class="font-semibold text-slate-700">Inversiones para mantener el cierre de brechas</p>
+            <p class="text-lg font-bold text-slate-800">S/ 166.8 millones</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="metas-tarifas" class="mb-16 scroll-mt-20">
+    <h2 class="text-3xl font-bold text-slate-900 mb-2" style="color: var(--portalThemeColor7);">Metas de Gestión y Tarifas</h2>
+    <p class="text-lg text-slate-600 mb-8 max-w-3xl" style="color: var(--portalThemeColor7);">Compromisos de gestión que Aguas de Lima Norte debe alcanzar durante el periodo regulatorio y su relación con el nivel y evolución de las tarifas.</p>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Metas a Nivel de Empresa Prestadora</h3>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Relación de Trabajo de la EP (%)</h4>
+        <div class="chart-container h-64" style="position: relative; width: 100%;"><canvas id="workingRatioChart"></canvas></div>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Avance Financiero del Programa de Inversiones (%)</h4>
+        <div class="chart-container h-64" style="position: relative; width: 100%;"><canvas id="advanceChart"></canvas></div>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-slate-500 text-sm font-medium">Catastro Comercial</h4>
+        <p class="text-3xl font-bold mt-2">100%</p>
+        <p class="text-xs text-slate-400 mt-1">Meta a alcanzar en todo el periodo regulatorio</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-slate-500 text-sm font-medium">Catastro Técnico</h4>
+        <p class="text-3xl font-bold mt-2">100%</p>
+        <p class="text-xs text-slate-400 mt-1">Meta a alcanzar en el Año 3</p>
+      </div>
+    </div>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Metas a Nivel de Localidad (Año 5)</h3>
+    <div class="overflow-x-auto mb-2">
+      <table class="data-table glass-card rounded-2xl overflow-hidden">
+        <thead><tr><th>Localidad</th><th>Reemplazo de Medidores (Total)</th><th>Continuidad (h/d)</th><th>Presión (m.c.a.)</th><th>Micromedición (%)</th></tr></thead>
+        <tbody>
+          <tr><td>Huacho</td><td>25 699</td><td>12</td><td>14</td><td>94</td></tr>
+          <tr><td>Sayán</td><td>2 247</td><td>22</td><td>23</td><td>98</td></tr>
+          <tr><td>Végueta</td><td>3 486</td><td>24</td><td>25</td><td>96</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="text-xs text-slate-400 mb-10">Nota: se muestran las metas de gestión del último año del periodo regulatorio (Año 5); para el detalle completo revisar el estudio tarifario.</p>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Tarifas (S/ / m³, sin IGV)</h3>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+      <div class="glass-card p-6 rounded-2xl overflow-x-auto">
+        <h4 class="text-lg font-bold mb-4">Tarifa Media de Mediano Plazo vs. Costo Medio de Largo Plazo</h4>
+        <table class="data-table">
+          <thead><tr><th>Servicio</th><th>Tarifa Media MP</th><th>Costo Medio LP</th></tr></thead>
+          <tbody>
+            <tr><td>Agua Potable</td><td>3.25</td><td>11.16</td></tr>
+            <tr><td>Saneamiento</td><td>1.41</td><td>7.57</td></tr>
+            <tr><td>Total</td><td>4.66</td><td>18.73</td></tr>
+          </tbody>
+        </table>
+        <p class="text-xs text-slate-400 mt-3">El costo medio de largo plazo refleja el costo del servicio en un escenario sin brechas.</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl overflow-x-auto">
+        <h4 class="text-lg font-bold mb-4">Incrementos Tarifarios Programados</h4>
+        <table class="data-table mb-6">
+          <thead><tr><th>Año</th><th>Agua Potable</th><th>Saneamiento</th></tr></thead>
+          <tbody>
+            <tr><td>Año 1</td><td>11.5%</td><td>11.5%</td></tr>
+            <tr><td>Año 2</td><td>0.0%</td><td>0.0%</td></tr>
+            <tr><td>Año 3</td><td>11.2%</td><td>11.2%</td></tr>
+          </tbody>
+        </table>
+        <h4 class="text-lg font-bold mb-4">Incrementos Adicionales por Reordenamiento Tarifario</h4>
+        <p class="text-xs text-slate-400 mb-2">Aplica por igual a agua potable y saneamiento, según localidad.</p>
+        <table class="data-table">
+          <thead><tr><th>Año</th><th>Huacho</th><th>Sayán y Végueta</th></tr></thead>
+          <tbody>
+            <tr><td>Año 1</td><td>0.0%</td><td>0.0%</td></tr>
+            <tr><td>Año 2</td><td>5.1%</td><td>4.9%</td></tr>
+            <tr><td>Año 4</td><td>5.2%</td><td>4.6%</td></tr>
+            <tr><td>Año 5</td><td>5.2%</td><td>4.4%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+
+      // Data for investment breakdown chart (from "Resumen del programa de inversiones" table, page 20)
+      const investmentBreakdownData = {
+          labels: ['Ampliación', 'Mejoramiento', 'Institucional', 'GRD y ACC', 'MRSE', 'PCC y PAS', 'Reposición de equipos'],
+          datasets: [{
+              label: 'Distribución de la Inversión',
+              data: [18646222, 6752804, 7310834, 966510, 1588914, 145000, 741525],
+              backgroundColor: [
+                  '#0071CE',
+                  '#005B9F',
+                  '#00447A',
+                  '#5DB92E',
+                  '#7AD34C',
+                  '#0071CE',
+                  '#0071CE'
+              ],
+              borderColor: '#f0f9ff', /* sky-50 */
+              borderWidth: 2,
+              hoverOffset: 4
+          }]
+      };
+
+      // Lista de proyectos reconciliada contra el Estudio Tarifario real (2026-07-22): la lista
+      // anterior tenía solo 26 proyectos y varios de "GRD y ACC" con montos inventados que no
+      // sumaban al total oficial. Estos 59 proyectos sí están tomados del documento y su categoría
+      // fue verificada por reconciliación aritmética contra los 6 totales oficiales del gráfico
+      // (Ampliación 18,646,222 / Mejoramiento 6,752,804 / Institucional 7,310,834 / GRD y ACC 966,510
+      // / MRSE 1,588,914 / PCC y PAS 145,000): suman 18,644,231 / 6,757,200 / 7,308,428 / 966,510 /
+      // 1,588,914 / 145,000 respectively (±0.03% de diferencia total, dentro del margen de redondeo
+      // esperable ya que el documento no etiqueta la categoría de cada proyecto individualmente).
+      // NOTA: el total oficial (S/36,151,810) incluye además S/741,525 de "Reposición de equipos"
+      // que no tiene proyectos individuales identificables en el documento — no se inventaron para
+      // no fabricar información; el gráfico de inversión superior sí refleja ese monto correctamente.
+      const projects = [
+          { name: "Ampliación marginal (obra civil) pozo sustituto (Huacho)", category: "Ampliación", amount: 920374, year: '2026-2027' },
+          { name: "Creación de reservorio de agua potable en pozo 7 (Hualmay)", category: "Ampliación", amount: 1956491, year: '2027' },
+          { name: "Creación de captación de agua mediante galerías filtrantes (playa Chorrillos) (Huacho)", category: "Ampliación", amount: 898513, year: '2028-2029' },
+          { name: "Creación de caseta de bombeo y pozo sustituto E.B. N°06 (Santa María)", category: "Ampliación", amount: 1123274, year: '2027-2029' },
+          { name: "Estudios, terreno y construcción de pozo, caseta y reservorio (sector 11) (Huacho)", category: "Ampliación", amount: 7142668, year: '2027-2029' },
+          { name: "Creación de reservorio y cerco perimétrico (sector Manzanares I) (Huacho)", category: "Ampliación", amount: 1358398, year: '2026-2027' },
+          { name: "Ampliación marginal del laboratorio de control de calidad de la EPS", category: "Institucional", amount: 384981, year: '2028-2029' },
+          { name: "Optimización de estaciones de bombeo (Huacho, Sayán y Végueta)", category: "Mejoramiento", amount: 2364407, year: '2026-2029' },
+          { name: "Renovación de válvulas de purga de aire, grifos y compuertas", category: "Mejoramiento", amount: 487288, year: '2025-2029' },
+          { name: "Optimización del área de catastro técnico de la EPS", category: "Institucional", amount: 443599, year: '2025-2027' },
+          { name: "Mejoramiento de redes y conexiones (Plaza de Armas) (Huacho)", category: "Mejoramiento", amount: 300779, year: '2027' },
+          { name: "Mejoramiento de redes y conexiones (pasaje María Luisa) (Hualmay)", category: "Mejoramiento", amount: 121724, year: '2026' },
+          { name: "Ampliación de redes (prolongación Santa Rosa) (Hualmay)", category: "Ampliación", amount: 384949, year: '2025' },
+          { name: "Reposición de red y conexiones (Av. Buenos Aires) (Huacho)", category: "Mejoramiento", amount: 119750, year: '2026' },
+          { name: "Construcción de sistema de abastecimiento (Av. Chururo) (Hualmay)", category: "Ampliación", amount: 65990, year: '2026' },
+          { name: "Ampliación marginal (Av. La Paz) (Huacho)", category: "Ampliación", amount: 153700, year: '2025' },
+          { name: "Ampliación marginal (Asoc. Virgen de la Asunción) (Santa María)", category: "Ampliación", amount: 2808148, year: '2027-2029' },
+          { name: "Reposición de red y conexiones (pasaje Demetrio Gamarra) (Santa María)", category: "Mejoramiento", amount: 136622, year: '2028-2029' },
+          { name: "Renovación de redes y conexiones (prolongación Santa Rosa) (Hualmay)", category: "Mejoramiento", amount: 466834, year: '2028-2029' },
+          { name: "Ampliación marginal (Diamelas) (Santa María)", category: "Ampliación", amount: 153856, year: '2025' },
+          { name: "Renovación de redes de alcantarillado (calle Florián Díaz) (Hualmay)", category: "Mejoramiento", amount: 298896, year: '2026' },
+          { name: "Renovación de redes de alcantarillado (Av. San Isidro) (Hualmay)", category: "Mejoramiento", amount: 216180, year: '2026' },
+          { name: "Optimización del sistema comercial: renovación de medidores (Huacho)", category: "Institucional", amount: 3315824, year: '2025-2029' },
+          { name: "Optimización del sistema comercial: renovación de medidores (Sayán)", category: "Institucional", amount: 289920, year: '2025-2029' },
+          { name: "Optimización del sistema comercial: renovación de medidores (Végueta)", category: "Institucional", amount: 449783, year: '2025-2029' },
+          { name: "Optimización del sistema comercial: instalación de 1,059 medidores (Huacho)", category: "Ampliación", amount: 364501, year: '2025-2029' },
+          { name: "Optimización del sistema comercial: instalación de 622 medidores (Sayán)", category: "Mejoramiento", amount: 71530, year: '2025-2026' },
+          { name: "Optimización del sistema comercial: instalación de 21 medidores (Végueta)", category: "Ampliación", amount: 2415, year: '2025' },
+          { name: "Optimización de equipo de producción: adquisición de vehículos", category: "Institucional", amount: 225078, year: '2027' },
+          { name: "Optimización de la Gerencia de Infraestructura: vehículos y equipos", category: "Institucional", amount: 802381, year: '2026-2027' },
+          { name: "Optimización de la Gerencia Comercial: vehículos y equipos", category: "Institucional", amount: 173686, year: '2025-2029' },
+          { name: "Elaboración de perfil para ampliación (Los Jardines) (Sayán)", category: "Ampliación", amount: 110169, year: '2026' },
+          { name: "Elaboración de perfil para ampliación (Buena Vista) (Sayán)", category: "Ampliación", amount: 110169, year: '2026' },
+          { name: "Elaboración de perfil y expediente técnico (Los Pinos) (Santa María)", category: "Mejoramiento", amount: 1016949, year: '2028-2029' },
+          { name: "Estudio de perfil y exp. técnico de pozo y reservorio (sector 10) (Hualmay)", category: "Institucional", amount: 229811, year: '2028-2029' },
+          { name: "Estudio de perfil y exp. técnico de pozo y reservorio (sector 12) (Hualmay)", category: "Institucional", amount: 229811, year: '2028-2029' },
+          { name: "Optimización de equipo de producción: 80 dataloggers (Huacho)", category: "Institucional", amount: 689600, year: '2025' },
+          { name: "Ampliación marginal de redes (calle Unión) (Végueta)", category: "Ampliación", amount: 51024, year: '2026' },
+          { name: "Rehabilitación de red de agua y alcantarillado (calle Tarapacá) (Végueta)", category: "Mejoramiento", amount: 169486, year: '2028-2029' },
+          { name: "Ampliación marginal de redes (calle Patricio Collantes) (Végueta)", category: "Ampliación", amount: 111022, year: '2025' },
+          { name: "Rehabilitación de redes (pasaje Mateo García) (Végueta)", category: "Mejoramiento", amount: 116024, year: '2028-2029' },
+          { name: "Ampliación marginal de redes (pasaje 7 y Manuel Medina) (Végueta)", category: "Ampliación", amount: 124747, year: '2025' },
+          { name: "Optimización de la administración mediante vehículos (Végueta)", category: "Institucional", amount: 21467, year: '2027' },
+          { name: "Ampliación marginal de redes (calle Melchor Aponte) (Végueta)", category: "Ampliación", amount: 161666, year: '2026' },
+          { name: "Rehabilitación de red colectora secundaria (Susana Okada) (Végueta)", category: "Mejoramiento", amount: 94742, year: '2028-2029' },
+          { name: "Mejoramiento de la PTAR Mazo (Végueta)", category: "Mejoramiento", amount: 178060, year: '2026-2027' },
+          { name: "Mejoramiento de la PTAR San Luis (Végueta)", category: "Mejoramiento", amount: 122200, year: '2026-2027' },
+          { name: "Ampliación de redes (conjunto habitacional Mani Alto) (Sayán)", category: "Ampliación", amount: 130534, year: '2025' },
+          { name: "Mejoramiento de redes (jr. Buenos Aires, Bellavista, Santa Cruz) (Sayán)", category: "Mejoramiento", amount: 475729, year: '2026-2027' },
+          { name: "Ampliación marginal (AA.HH. Los Ángeles) (Sayán)", category: "Ampliación", amount: 151213, year: '2025' },
+          { name: "Optimización de la administración mediante vehículos (Sayán)", category: "Institucional", amount: 21437, year: '2026' },
+          { name: "Medidores para conexiones de ampliación (Huacho)", category: "Ampliación", amount: 81190, year: '2025-2029' },
+          { name: "Medidores para conexiones de ampliación (Végueta)", category: "Ampliación", amount: 7245, year: '2025-2026' },
+          { name: "Medidores para conexiones vegetativas (Huacho)", category: "Ampliación", amount: 234025, year: '2025-2029' },
+          { name: "Medidores para conexiones vegetativas (Sayán)", category: "Institucional", amount: 31050, year: '2025-2029' },
+          { name: "Medidores para conexiones vegetativas (Végueta)", category: "Ampliación", amount: 37950, year: '2025-2029' },
+          { name: "Implementación de Mecanismos de Retribución por Servicios Ecosistémicos (MRSE)", category: "MRSE", amount: 1588914, year: '2025-2029' },
+          { name: "Gestión del Riesgo de Desastres y Adaptación al Cambio Climático (GRD y ACC)", category: "GRD y ACC", amount: 966510, year: '2025-2029' },
+          { name: "Elaboración del Plan de Control de Calidad y Adecuación Sanitaria (PCC y PAS)", category: "PCC y PAS", amount: 145000, year: '2025-2029' }
+      ];
+
+
+      // Tarifas corregidas (2026-07-22): la "current" original en realidad tenía los valores de la
+      // propuesta de Año 1 (comparados y confirmados idénticos contra el Cuadro de tarifa PROPUESTA
+      // real), y luego se le aplicaba +11.5% ENCIMA como si fuera el salto a Año 1 — un doble conteo.
+      // Ahora "current" tiene la tarifa VIGENTE real (Cuadro de tarifa vigente) y "year1" tiene la
+      // propuesta real (que antes estaba mal puesta en "current"). "year3" sigue siendo una
+      // estimación (factor 1.112 heredado de la extracción original, sin tabla de incrementos
+      // Año2/Año3 confirmada en esta ronda), aplicada una sola vez sobre el Año 1 real.
+      // Factor de subsidio doméstico: 0.70 sobre el tramo 0-8 m³ en Año 1, en las 3 localidades.
+      const tariffData = {
+          huacho: {
+              current: { // Tarifa VIGENTE real
+                  social: { water: 1.304, sewage: 0.428, ranges: [] },
+                  domestico_no_subsidiado: { water: 1.304, sewage: 0.428, ranges: [[8, 1.762, 0.579], [16, 3.329, 1.090]] },
+                  domestico_subsidiado: { water: 1.304, sewage: 0.428, ranges: [[8, 1.762, 0.579], [16, 3.329, 1.090]] },
+                  comercial: { water: 3.600, sewage: 1.180, ranges: [[30, 7.092, 2.323]] },
+                  estatal: { water: 3.600, sewage: 1.180, ranges: [[50, 4.712, 1.585]] },
+                  industrial: { water: 5.295, sewage: 1.744, ranges: [[60, 7.092, 2.323]] },
+                  cargoFijo: 4.193
+              },
+              year1: { // Tarifa PROPUESTA real (Año 1)
+                  social: { water: 1.46, sewage: 0.48, ranges: [] },
+                  domestico_no_subsidiado: { water: 1.46, sewage: 0.48, ranges: [[8, 1.97, 0.65], [16, 3.72, 1.22]] },
+                  domestico_subsidiado: { water: 1.46 * 0.70, sewage: 0.48, ranges: [[8, 1.97, 0.65], [16, 3.72, 1.22]] },
+                  comercial: { water: 4.02, sewage: 1.32, ranges: [[30, 7.91, 2.60]] },
+                  estatal: { water: 4.02, sewage: 1.32, ranges: [[50, 5.26, 1.77]] },
+                  industrial: { water: 5.91, sewage: 1.95, ranges: [[60, 7.91, 2.60]] },
+                  cargoFijo: 4.2
+              },
+              year3: { // Estimado: Año 1 x 1.112 (factor heredado, sin confirmar en esta ronda)
+                  social: { water: 1.46 * 1.112, sewage: 0.48 * 1.112, ranges: [] },
+                  domestico_no_subsidiado: { water: 1.46 * 1.112, sewage: 0.48 * 1.112, ranges: [[8, 1.97 * 1.112, 0.65 * 1.112], [16, 3.72 * 1.112, 1.22 * 1.112]] },
+                  domestico_subsidiado: { water: (1.46 * 0.70) * 1.112, sewage: 0.48 * 1.112, ranges: [[8, 1.97 * 1.112, 0.65 * 1.112], [16, 3.72 * 1.112, 1.22 * 1.112]] },
+                  comercial: { water: 4.02 * 1.112, sewage: 1.32 * 1.112, ranges: [[30, 7.91 * 1.112, 2.60 * 1.112]] },
+                  estatal: { water: 4.02 * 1.112, sewage: 1.32 * 1.112, ranges: [[50, 5.26 * 1.112, 1.77 * 1.112]] },
+                  industrial: { water: 5.91 * 1.112, sewage: 1.95 * 1.112, ranges: [[60, 7.91 * 1.112, 2.60 * 1.112]] },
+                  cargoFijo: 4.2 * 1.112
+              }
+          },
+          sayan_vegueta: {
+              current: { // Tarifa VIGENTE real
+                  social: { water: 1.105, sewage: 0.494, ranges: [] },
+                  domestico_no_subsidiado: { water: 1.105, sewage: 0.494, ranges: [[8, 1.178, 0.519], [16, 2.930, 1.237]] },
+                  domestico_subsidiado: { water: 1.105, sewage: 0.494, ranges: [[8, 1.178, 0.519], [16, 2.930, 1.237]] },
+                  comercial: { water: 2.632, sewage: 1.325, ranges: [[30, 5.413, 2.414]] },
+                  estatal: { water: 2.632, sewage: 1.325, ranges: [[50, 2.907, 1.485]] },
+                  industrial: { water: 2.930, sewage: 1.237, ranges: [[60, 5.455, 2.433]] },
+                  cargoFijo: 4.193
+              },
+              year1: { // Tarifa PROPUESTA real (Año 1)
+                  social: { water: 1.17, sewage: 0.52, ranges: [] },
+                  domestico_no_subsidiado: { water: 1.24, sewage: 0.56, ranges: [[8, 1.32, 0.58], [16, 3.27, 1.38]] },
+                  domestico_subsidiado: { water: (1.24 * 0.70), sewage: 0.56, ranges: [[8, 1.32, 0.58], [16, 3.27, 1.38]] },
+                  comercial: { water: 2.94, sewage: 1.48, ranges: [[30, 5.69, 2.54]] },
+                  estatal: { water: 3.35, sewage: 1.71, ranges: [] },
+                  industrial: { water: 3.27, sewage: 1.38, ranges: [[60, 5.73, 2.56]] },
+                  cargoFijo: 4.2
+              },
+              year3: { // Estimado: Año 1 x 1.112 (factor heredado, sin confirmar en esta ronda)
+                  social: { water: 1.17 * 1.112, sewage: 0.52 * 1.112, ranges: [] },
+                  domestico_no_subsidiado: { water: 1.24 * 1.112, sewage: 0.56 * 1.112, ranges: [[8, 1.32 * 1.112, 0.58 * 1.112], [16, 3.27 * 1.112, 1.38 * 1.112]] },
+                  domestico_subsidiado: { water: (1.24 * 0.70) * 1.112, sewage: 0.56 * 1.112, ranges: [[8, 1.32 * 1.112, 0.58 * 1.112], [16, 3.27 * 1.112, 1.38 * 1.112]] },
+                  comercial: { water: 2.94 * 1.112, sewage: 1.48 * 1.112, ranges: [[30, 5.69 * 1.112, 2.54 * 1.112]] },
+                  estatal: { water: 3.35 * 1.112, sewage: 1.71 * 1.112, ranges: [] },
+                  industrial: { water: 3.27 * 1.112, sewage: 1.38 * 1.112, ranges: [[60, 5.73 * 1.112, 2.56 * 1.112]] },
+                  cargoFijo: 4.2 * 1.112
+              }
+          }
+      };
+
+      function formatCurrency(amount) {
+          return new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' }).format(amount);
+      }
+
+      // Diagnóstico operativo: donuts de cobertura
+      function makeCoverageDonut(canvasId, value) {
+          new Chart(document.getElementById(canvasId).getContext('2d'), {
+              type: 'doughnut',
+              data: {
+                  labels: ['Cobertura', 'Resto'],
+                  datasets: [{
+                      data: [value, 100 - value],
+                      backgroundColor: ['#0071CE', '#E0F2FE'],
+                      borderWidth: 0
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  cutout: '72%',
+                  plugins: { legend: { display: false }, tooltip: { enabled: false } }
+              },
+              plugins: [{
+                  id: 'centerText' + canvasId,
+                  afterDraw: (chart) => {
+                      const { ctx, chartArea: { width, height, top, left } } = chart;
+                      ctx.save();
+                      ctx.font = 'bold 20px Inter, sans-serif';
+                      ctx.fillStyle = '#005B9F';
+                      ctx.textAlign = 'center';
+                      ctx.textBaseline = 'middle';
+                      ctx.fillText(value + '%', left + width / 2, top + height / 2);
+                      ctx.restore();
+                  }
+              }]
+          });
+      }
+      makeCoverageDonut('covApChart', 78);
+      makeCoverageDonut('covSaneamientoChart', 75.9);
+
+      // Diagnóstico económico-financiero: ingresos vs costos
+      new Chart(document.getElementById('incomeCostChart').getContext('2d'), {
+          type: 'bar',
+          data: {
+              labels: ['2019', '2020', '2021', '2022', '2023'],
+              datasets: [
+                  { label: 'Ingresos', data: [14.5, 14.6, 15.1, 19.2, 20.7], backgroundColor: '#7dd3fc' },
+                  { label: 'Costos y gastos desembolsables', data: [11.9, 11.5, 14.7, 16.6, 17.3], backgroundColor: '#005B9F' }
+              ]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: { y: { beginAtZero: true, ticks: { callback: (v) => 'S/ ' + v + 'M' } } },
+              plugins: {
+                  legend: { position: 'bottom' },
+                  tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: S/ ${ctx.parsed.y} millones` } }
+              }
+          }
+      });
+
+      const breakdownCtx = document.getElementById('investmentBreakdownChart').getContext('2d');
+      const breakdownChart = new Chart(breakdownCtx, {
+          type: 'doughnut',
+          data: investmentBreakdownData,
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                  legend: {
+                      position: 'bottom',
+                  },
+                  tooltip: {
+                       callbacks: {
+                          label: function(context) {
+                              let label = context.label || '';
+                              if (label) {
+                                  label += ': ';
+                              }
+                              if (context.parsed !== null) {
+                                  const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                  const percentage = ((context.parsed / total) * 100).toFixed(2);
+                                  label += `${new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' }).format(context.parsed)} (${percentage}%)`;
+                              }
+                              return label;
+                          }
+                      }
+                  }
+              },
+              onClick: (event, elements) => {
+                  if (elements.length > 0) {
+                      const chartElement = elements[0];
+                      const label = breakdownChart.data.labels[chartElement.index];
+                      filterProjects(label);
+                  }
+              }
+          }
+      });
+
+      // Distribución por finalidad (% de los ingresos)
+      new Chart(document.getElementById('purposeChart').getContext('2d'), {
+          type: 'doughnut',
+          data: {
+              labels: ['Perforación de pozos, reservorios y redes', 'Ampliación y reemplazo de medidores', 'Renovación y adquisición de equipos', 'Reserva', 'Estudios', 'Vehículos, accesorios y maquinarias', 'Catastro técnico'],
+              datasets: [{
+                  data: [58, 14, 12, 7, 5, 3, 1],
+                  backgroundColor: ['#0071CE', '#005B9F', '#00447A', '#5DB92E', '#7AD34C', '#7dd3fc', '#164e63'],
+                  borderColor: '#f0f9ff',
+                  borderWidth: 2
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                  legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+                  tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.parsed}%` } }
+              }
+          }
+      });
+
+      // Metas EP: relación de trabajo (5 años)
+      new Chart(document.getElementById('workingRatioChart').getContext('2d'), {
+          type: 'line',
+          data: {
+              labels: ['Año 1', 'Año 2', 'Año 3', 'Año 4', 'Año 5'],
+              datasets: [{
+                  label: 'Relación de trabajo (%)',
+                  data: [77, 74, 68, 67, 64],
+                  borderColor: '#005B9F',
+                  backgroundColor: '#005B9F',
+                  tension: 0.3,
+                  pointRadius: 5
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: { y: { suggestedMin: 55, suggestedMax: 80 } },
+              plugins: { legend: { display: false } }
+          }
+      });
+
+      // Metas EP: avance financiero del programa de inversiones (5 años)
+      new Chart(document.getElementById('advanceChart').getContext('2d'), {
+          type: 'bar',
+          data: {
+              labels: ['Año 1', 'Año 2', 'Año 3', 'Año 4', 'Año 5'],
+              datasets: [{
+                  label: 'Avance financiero (%)',
+                  data: [7, 25, 43, 75, 100],
+                  backgroundColor: '#005B9F'
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: { y: { beginAtZero: true, max: 100, ticks: { callback: (v) => v + '%' } } },
+              plugins: { legend: { display: false } }
+          }
+      });
+
+      const projectListContainer = document.getElementById('project-list');
+
+      function displayProjects(filteredProjects) {
+          projectListContainer.innerHTML = '';
+          if (filteredProjects.length === 0) {
+              projectListContainer.innerHTML = '<p class="text-slate-500">No se encontraron proyectos para esta categoría.</p>';
+              return;
+          }
+          filteredProjects.forEach(p => {
+              const projectEl = document.createElement('div');
+              projectEl.className = 'border-b border-slate-200 pb-3';
+              projectEl.innerHTML = `
+                  <p class="font-semibold text-slate-800">${p.name}</p>
+                  <div class="flex justify-between items-center text-sm mt-1">
+                      <span class="text-[#0071CE] font-medium">${p.category}</span>
+                      <span class="text-slate-500">${formatCurrency(p.amount)}</span>
+                  </div>
+              `;
+              projectListContainer.appendChild(projectEl);
+          });
+      }
+
+      function filterProjects(category) {
+           const filtered = category === 'Todos' ? projects : projects.filter(p => p.category === category);
+           displayProjects(filtered);
+      }
+
+      displayProjects(projects); // Initial display of all projects
+
+      const userLocationSelect = document.getElementById('userLocation');
+      const userCategorySelect = document.getElementById('userCategory');
+      const consumptionInput = document.getElementById('consumption');
+      const currentBillEl = document.getElementById('currentBill');
+      const newBill1El = document.getElementById('newBill1');
+      const newBill3El = document.getElementById('newBill3');
+      const subsidyInfoEl = document.getElementById('subsidy-info');
+
+      function calculateBill(consumption, tariffs, cargoFijo) {
+          let waterCost = 0;
+          let sewageCost = 0;
+          let processedConsumption = 0;
+
+          if (tariffs.ranges.length > 0) {
+              const firstBlockLimit = tariffs.ranges[0][0]; // First range limit
+
+              // Handle the first block if consumption is within or exceeds it
+              const consumptionInFirstBlock = Math.min(consumption, firstBlockLimit);
+              waterCost += consumptionInFirstBlock * tariffs.water;
+              sewageCost += consumptionInFirstBlock * tariffs.sewage;
+              processedConsumption += consumptionInFirstBlock;
+
+              // Iterate through subsequent blocks
+              for (let i = 0; i < tariffs.ranges.length; i++) {
+                  const currentRangeUpperLimit = tariffs.ranges[i][0];
+                  const nextRangeUpperLimit = (i + 1 < tariffs.ranges.length) ? tariffs.ranges[i+1][0] : Infinity;
+
+                  // If consumption is beyond the current block's upper limit
+                  if (consumption > currentRangeUpperLimit) {
+                      const consumptionInCurrentBlock = Math.min(consumption - processedConsumption, nextRangeUpperLimit - currentRangeUpperLimit);
+                      waterCost += consumptionInCurrentBlock * tariffs.ranges[i][1]; // Water rate for this block
+                      sewageCost += consumptionInCurrentBlock * tariffs.ranges[i][2]; // Sewage rate for this block
+                      processedConsumption += consumptionInCurrentBlock;
+                  }
+              }
+          } else { // No ranges, flat rate
+              waterCost = consumption * tariffs.water;
+              sewageCost = consumption * tariffs.sewage;
+          }
+
+          const subtotal = cargoFijo + waterCost + sewageCost;
+          const total = subtotal * 1.18; // Apply 18% IGV
+          return total;
+      }
+
+
+      function updateBills() {
+          const location = userLocationSelect.value;
+          const category = userCategorySelect.value;
+          const consumption = parseFloat(consumptionInput.value) || 0;
+
+          subsidyInfoEl.classList.toggle('hidden', category !== 'domestico_subsidiado');
+
+          const currentTariffs = tariffData[location].current[category];
+          const newTariffs1 = tariffData[location].year1[category];
+          const newTariffs3 = tariffData[location].year3[category];
+
+          currentBillEl.textContent = formatCurrency(calculateBill(consumption, currentTariffs, tariffData[location].current.cargoFijo));
+          newBill1El.textContent = formatCurrency(calculateBill(consumption, newTariffs1, tariffData[location].year1.cargoFijo));
+          newBill3El.textContent = formatCurrency(calculateBill(consumption, newTariffs3, tariffData[location].year3.cargoFijo));
+      }
+
+      userLocationSelect.addEventListener('change', updateBills);
+      userCategorySelect.addEventListener('change', updateBills);
+      consumptionInput.addEventListener('input', updateBills);
+
+      updateBills(); // Initial calculation on page load
+
+      const mobileMenuButton = document.getElementById('mobile-menu-button');
+      const mobileMenu = document.getElementById('mobile-menu');
+
+      mobileMenuButton.addEventListener('click', () => {
+          mobileMenu.classList.toggle('hidden');
+      });
+  });
+
+  function scrollToSection(sectionId) {
+      document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+
+      const mobileMenu = document.getElementById('mobile-menu');
+      if(!mobileMenu.classList.contains('hidden')){
+          mobileMenu.classList.add('hidden');
+      }
+  }
+</script>

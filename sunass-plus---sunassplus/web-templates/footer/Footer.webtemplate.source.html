@@ -1,0 +1,28 @@
+<footer role="contentinfo" class="footer" style="background: linear-gradient(108deg, #005B9F 0%, #005B9F 78%, #4BAF18 78.1%, #4BAF18 100%); padding: 0; margin: 0; overflow: hidden;">
+  <div style="max-width: 1200px; margin: 0 auto; padding: 40px 24px 20px 24px;">
+    <!-- Fila principal -->
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 24px; margin-bottom: 24px;">
+      <!-- Logo CION + texto -->
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <img src="/logo%20de%20Equipo%20CION.png" alt="Equipo CION" style="height: 48px; object-fit: contain;" />
+      </div>
+      <!-- Logo SUNASS -->
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="color: #ffffff; font-size: 24px; font-weight: 700; font-family: 'Inter', sans-serif; letter-spacing: -0.5px;">Sunass</span>
+        <span style="color: rgba(255,255,255,0.6); font-size: 13px; font-family: 'Inter', sans-serif;">El regulador del agua potable</span>
+      </div>
+    </div>
+    <!-- Línea divisoria -->
+    <div style="border-top: 1px solid rgba(255,255,255,0.12); padding-top: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+      <p style="color: rgba(255,255,255,0.5); font-size: 13px; margin: 0; font-family: 'Inter', sans-serif;">© {{ now | date: 'yyyy' }} SUNASS · CION</p>
+      <p style="color: rgba(255,255,255,0.5); font-size: 13px; margin: 0; font-family: 'Inter', sans-serif;">Información pública para mejores decisiones.</p>
+    </div>
+  </div>
+</footer>
+
+<script type="text/javascript">
+  window.onload = function() {
+    const accessibilityLinkContainer = document.getElementById("accessibilityLinkContainer");
+    if (accessibilityLinkContainer) accessibilityLinkContainer.remove();
+  };
+ </script>

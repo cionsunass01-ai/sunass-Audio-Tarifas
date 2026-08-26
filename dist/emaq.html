@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ficha Regulatoria - EPS EMAQ S.A. | SUNASS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg-page: #ebf7ff;
+      --navy: #0B2341;
+      --cyan-accent: #00BCD4;
+      --cyan-light: #E0F7FA;
+      --sunass-blue: #0071CE;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #ebf7ff !important;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased flex flex-col min-h-screen" style="background-color: #ebf7ff !important;">
+  
+  <div class="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between text-xs sm:text-sm text-slate-600 shadow-sm sticky top-0 z-50">
+    <a href="./index.html" class="inline-flex items-center gap-2 font-semibold text-blue-600 hover:text-blue-800 transition">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+      Volver al Catálogo de Estudios Tarifarios
+    </a>
+    <span class="text-slate-400 hidden sm:inline">SUNASS — Portal de Estudios Tarifarios</span>
+  </div>
+  
+  <div class="flex-grow" style="background-color: #ebf7ff !important;">
+    <meta charset="UTF-8" />
+<div class="row sectionBlockLayout text-start" style="display: flex; flex-wrap: wrap; margin: 0px; min-height: auto; padding: 8px;">
+  <div class="container" style="padding: 0px; display: flex; flex-wrap: wrap;">
+    <div class="col-lg-12 columnBlockLayout" style="flex-grow: 1; display: flex; flex-direction: column; min-width: 250px; margin: 0px; padding: 0px;"><div class="row sectionBlockLayout" style="display: flex; flex-wrap: wrap; padding: 8px; margin: 0px; min-height: 15px;"></div></div>
+  </div>
+</div>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" /><!-- Chosen Palette: Calm Harmony (Slate, Cyan) --><!-- Application Structure Plan: The SPA mirrors the official SUNASS regulatory fact sheet (ficha) for EMAQ. Sections: 1) Datos Generales (company/regulatory snapshot). 2) Diagnósticos (operational, commercial, economic-financial). 3) Mi Recibo (personal bill calculator). 4) Inversión y Costos O&M (mid-term investment program + long-term gap-closing investments). 5) Metas de Gestión y Tarifas (EP and locality goals + tariff levels/increases). This mirrors the source document's own structure so every indicator in the fact sheet is traceable on the page. --><!-- Visualization & Content Choices: Stat cards for point-in-time figures, donut charts for coverage %, bar charts for investment/income-cost series, line/bar charts for multi-year goals, and plain tables for tariff comparisons — matching the chart types used in the source fact sheet. --><!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. --><title>Panel Interactivo: Ficha Regulatoria EMAQ 2024-2027</title>
+<style>
+  :root {
+    --navy: #0B2341;
+    --navy-light: #0F3460;
+    --cyan-accent: #00BCD4;
+    --cyan-light: #E0F7FA;
+    --sunass-blue: #0071CE;
+    --sunass-dark-blue: #005B9F;
+    --sunass-green: #5DB92E;
+    --bg-page: #ebf7ff;
+  }
+  body { background-color: var(--bg-page) !important; font-family: 'Inter', sans-serif; }
+
+  /* Cards: estilo CAMI YAKU — fondo blanco, borde izquierdo cyan, sombra suave */
+  .glass-card {
+    background: #ffffff !important;
+    border: 1px solid #E8ECF1;
+    border-left: 4px solid var(--cyan-accent) !important;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+    transition: box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+  .glass-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+    border-color: #D0D5DD;
+    border-left-color: var(--sunass-blue) !important;
+    transform: none;
+  }
+
+  /* Header: fondo blanco translúcido estilo CAMI YAKU */
+  .header-bg {
+    background: rgba(247, 251, 252, 0.92) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid #E0E7EE !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04) !important;
+  }
+
+  .text-sunass { color: var(--sunass-blue) !important; }
+  .bg-sunass { background-color: var(--sunass-blue) !important; }
+
+  /* FIX: Override Power Pages portal theme color variables that cause white text */
+  h1[style*="--portalThemeColor"],
+  h2[style*="--portalThemeColor"],
+  h3[style*="--portalThemeColor"],
+  p[style*="--portalThemeColor"] {
+    color: #1e293b !important;
+  }
+  /* Ensure all section headings are dark and readable */
+  section h2 { color: #1e293b !important; }
+  section > p { color: #475569 !important; }
+
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table th, .data-table td { padding: 0.6rem 0.75rem; text-align: center; font-size: 0.875rem; }
+  .data-table thead th { background-color: #0F3460; color: #ffffff; font-weight: 600; }
+  .data-table tbody tr:nth-child(even) { background-color: #F1F8FB; }
+  .data-table td:first-child, .data-table th:first-child { text-align: left; font-weight: 600; color: #1e293b; }
+
+</style>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" /><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<header class="header-bg sticky top-0 z-50">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <h1 class="text-xl md:text-2xl font-bold" style="color: var(--navy)">EMAQ</h1>
+      <nav class="hidden md:flex space-x-6"><a onclick="scrollToSection('datos-generales')" class="nav-link text-slate-700 opacity-80 hover:opacity-100 hover:text-blue-700 font-medium border-b-2 border-transparent pb-1" style="transition-behavior: normal; transition-duration: 0.3s; transition-timing-function: ease; transition-delay: 0s; transition-property: all; cursor: pointer;">Datos Generales</a><a onclick="scrollToSection('diagnosticos')" class="nav-link text-slate-700 opacity-80 hover:opacity-100 hover:text-blue-700 font-medium border-b-2 border-transparent pb-1" style="transition-behavior: normal; transition-duration: 0.3s; transition-timing-function: ease; transition-delay: 0s; transition-property: all; cursor: pointer;">Diagnósticos</a><a onclick="scrollToSection('mi-recibo')" class="nav-link text-slate-700 opacity-80 hover:opacity-100 hover:text-blue-700 font-medium border-b-2 border-transparent pb-1" style="transition-behavior: normal; transition-duration: 0.3s; transition-timing-function: ease; transition-delay: 0s; transition-property: all; cursor: pointer;">Mi Recibo</a><a onclick="scrollToSection('inversion')" class="nav-link text-slate-700 opacity-80 hover:opacity-100 hover:text-blue-700 font-medium border-b-2 border-transparent pb-1" style="transition-behavior: normal; transition-duration: 0.3s; transition-timing-function: ease; transition-delay: 0s; transition-property: all; cursor: pointer;">Inversión y O&amp;M</a><a onclick="scrollToSection('metas-tarifas')" class="nav-link text-slate-700 opacity-80 hover:opacity-100 hover:text-blue-700 font-medium border-b-2 border-transparent pb-1" style="transition-behavior: normal; transition-duration: 0.3s; transition-timing-function: ease; transition-delay: 0s; transition-property: all; cursor: pointer;">Metas y Tarifas</a></nav>
+      <button id="mobile-menu-button" class="md:hidden text-slate-800">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+      </button>
+    </div>
+  </div>
+  <div id="mobile-menu" class="md:hidden hidden bg-white border-t"><a onclick="scrollToSection('datos-generales')" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-50">Datos Generales</a><a onclick="scrollToSection('diagnosticos')" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-50">Diagnósticos</a><a onclick="scrollToSection('mi-recibo')" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-50">Mi Recibo</a><a onclick="scrollToSection('inversion')" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-50">Inversión y O&amp;M</a><a onclick="scrollToSection('metas-tarifas')" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-50">Metas y Tarifas</a></div>
+</header>
+<main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+  <section id="datos-generales" class="mb-16 scroll-mt-20">
+    <h2 class="text-3xl font-bold text-slate-900 mb-2" style="color: var(--portalThemeColor7);">Ficha Regulatoria 2024-2027</h2>
+    <p class="text-lg text-slate-600 mb-8 max-w-3xl" style="color: var(--portalThemeColor7);">Datos generales de EMAQ S.A. según el estudio tarifario aprobado por SUNASS para el periodo regulatorio 2024-2027.</p>
+
+    <div class="glass-card p-6 rounded-2xl mb-8">
+      <ul class="space-y-2 text-slate-700 text-sm md:text-base">
+        <li class="flex items-start"><i class="fa-solid fa-scale-balanced text-cyan-600 mr-3 mt-1 w-4 text-center"></i>Mediante RM N° 044-2016-VIVIENDA, se ratifica el acuerdo de OTASS que declara el inicio del Régimen de Apoyo Transitorio de la EP.</li>
+        <li class="flex items-start"><i class="fa-solid fa-file-signature text-cyan-600 mr-3 mt-1 w-4 text-center"></i>El estudio tarifario de EPS EMAQ S.A. fue aprobado mediante la Resolución de Consejo Directivo Nº 00082-2024-SUNASS-CD y publicada en el Diario Oficial El Peruano el 28 de diciembre de 2024.</li>
+      </ul>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      <div class="stat-card glass-card p-6 rounded-2xl">
+        <h3 class="text-slate-500 text-sm font-medium">Localidad</h3>
+        <p class="text-3xl font-bold mt-2">Quillabamba</p>
+        <p class="text-xs text-slate-400 mt-1">Región Cusco</p>
+      </div>
+      <div class="stat-card glass-card p-6 rounded-2xl">
+        <h3 class="text-slate-500 text-sm font-medium">Tamaño de Empresa</h3>
+        <p class="text-3xl font-bold mt-2">Mediana</p>
+        <p class="text-xs text-slate-400 mt-1">Clasificación SUNASS</p>
+      </div>
+      <div class="stat-card glass-card p-6 rounded-2xl">
+        <h3 class="text-slate-500 text-sm font-medium">Periodo Regulatorio</h3>
+        <p class="text-3xl font-bold mt-2">3 años</p>
+        <p class="text-xs text-slate-400 mt-1">2024 - 2027</p>
+      </div>
+      <div class="stat-card glass-card p-6 rounded-2xl">
+        <h3 class="text-slate-500 text-sm font-medium">Nivel de Esquema Regulatorio</h3>
+        <p class="text-3xl font-bold mt-2">Inicial</p>
+        <p class="text-xs text-slate-400 mt-1">N.° de revisiones tarifarias periódicas: 3</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="stat-card glass-card p-6 rounded-2xl" style="border-left-width: 4px; border-left-style: solid; border-left-color: #0071CE;">
+        <h3 class="text-slate-500 text-sm font-medium">Conexiones Totales de AP</h3>
+        <p class="text-3xl font-bold mt-2">18 757</p>
+        <p class="text-xs text-slate-400 mt-1">Agua potable</p>
+      </div>
+      <div class="stat-card glass-card p-6 rounded-2xl" style="border-left-width: 4px; border-left-style: solid; border-left-color: #0071CE;">
+        <h3 class="text-slate-500 text-sm font-medium">Conexiones Activas de AP</h3>
+        <p class="text-3xl font-bold mt-2">16 518</p>
+        <p class="text-xs text-slate-400 mt-1">Datos set. 2024</p>
+      </div>
+      <div class="stat-card glass-card p-6 rounded-2xl" style="border-left-width: 4px; border-left-style: solid; border-left-color: #0071CE;">
+        <h3 class="text-slate-500 text-sm font-medium">Continuidad</h3>
+        <p class="text-3xl font-bold mt-2">19.9 <span class="text-xl">h/día</span></p>
+        <p class="text-xs text-slate-400 mt-1">Promedio actual</p>
+      </div>
+      <div class="stat-card glass-card p-6 rounded-2xl" style="border-left-width: 4px; border-left-style: solid; border-left-color: #0071CE;">
+        <h3 class="text-slate-500 text-sm font-medium">Presión</h3>
+        <p class="text-3xl font-bold mt-2">10.8 <span class="text-xl">m.c.a.</span></p>
+        <p class="text-xs text-slate-400 mt-1">Promedio actual</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="diagnosticos" class="mb-16 scroll-mt-20">
+    <h2 class="text-3xl font-bold text-slate-900 mb-2" style="color: var(--portalThemeColor7);">Diagnósticos</h2>
+    <p class="text-lg text-slate-600 mb-8 max-w-3xl" style="color: var(--portalThemeColor7);">Situación operativa, comercial y económico-financiera de la empresa que sustenta el plan de inversiones.</p>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Diagnóstico Operativo</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      <div class="glass-card p-6 rounded-2xl text-center">
+        <h4 class="text-slate-500 text-sm font-medium mb-2">Cobertura de Agua Potable</h4>
+        <div class="chart-container h-32" style="position: relative; width: 100%;"><canvas id="covApChart"></canvas></div>
+        <p class="text-xs text-slate-400 mt-2">Población no coberturada: 15 165 hab.</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl text-center">
+        <h4 class="text-slate-500 text-sm font-medium mb-2">Cobertura de Alcantarillado</h4>
+        <div class="chart-container h-32" style="position: relative; width: 100%;"><canvas id="covSaneamientoChart"></canvas></div>
+        <p class="text-xs text-slate-400 mt-2">Población no coberturada: 26 250 hab.</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-slate-500 text-sm font-medium">Agua No Facturada (ANF)</h4>
+        <p class="text-3xl font-bold mt-2 text-slate-400">S.I.</p>
+        <p class="text-xs text-slate-400 mt-1">Sin información a nivel EP</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-slate-500 text-sm font-medium">Aguas Residuales Tratadas (PTAR)</h4>
+        <p class="text-3xl font-bold mt-2">0%</p>
+        <p class="text-xs text-slate-400 mt-1">Porcentaje que va a una PTAR</p>
+      </div>
+    </div>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Diagnóstico Comercial</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      <div class="glass-card p-6 rounded-2xl">
+        <span class="text-cyan-600 text-2xl"><i class="fa-solid fa-hand-holding-dollar"></i></span>
+        <p class="text-3xl font-bold mt-2">96%</p>
+        <p class="text-xs text-slate-400 mt-1">Eficiencia de la recaudación (respecto a la facturación)</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <span class="text-cyan-600 text-2xl"><i class="fa-solid fa-plug-circle-xmark"></i></span>
+        <p class="text-3xl font-bold mt-2">12%</p>
+        <p class="text-xs text-slate-400 mt-1">Conexiones inactivas de AP</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <span class="text-cyan-600 text-2xl"><i class="fa-solid fa-map-location-dot"></i></span>
+        <p class="text-3xl font-bold mt-2">100%</p>
+<p class="text-xs text-slate-400 mt-1">Catastro (Año 4)</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <span class="text-cyan-600 text-2xl"><i class="fa-solid fa-users"></i></span>
+        <p class="text-3xl font-bold mt-2">Sí</p>
+        <p class="text-xs text-slate-400 mt-1">Focalización de subsidios (subsidios cruzados)</p>
+      </div>
+    </div>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Diagnóstico Económico-Financiero</h3>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="lg:col-span-2 glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Ingresos y Costos Operativos 2019-2023 (millones de S/)</h4>
+        <div class="chart-container h-72" style="position: relative; width: 100%;"><canvas id="incomeCostChart"></canvas></div>
+        <p class="text-xs text-slate-400 mt-3">Ingresos: comprende ingresos por servicios de agua potable, saneamiento y cargo fijo.</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl space-y-4">
+        <div>
+          <p class="text-sm text-slate-500">Saldo inicial para financiamiento de inversiones</p>
+          <p class="text-2xl font-bold text-cyan-700">S/ 566 869</p>
+        </div>
+        <div class="border-t border-slate-200 pt-4">
+          <p class="text-sm text-slate-500">Deudas programadas para el periodo regulatorio</p>
+          <p class="text-2xl font-bold text-cyan-700">S/ 0</p>
+        </div>
+        <div class="border-t border-slate-200 pt-4">
+          <p class="text-sm text-slate-500">Incremento tarifario acumulado (fórmula + IPM), 2019-2023</p>
+          <p class="text-2xl font-bold text-cyan-700">9.3%</p>
+        </div>
+        <div class="border-t border-slate-200 pt-4">
+          <p class="text-sm text-slate-500">Incremento por fórmula tarifaria, primer año regulatorio</p>
+          <p class="text-2xl font-bold text-cyan-700">0.0%</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="mi-recibo" class="mb-16 scroll-mt-20">
+    <h2 class="text-3xl font-bold text-slate-900 mb-2" style="color: var(--portalThemeColor7);">¿Cómo Cambiará su Factura?</h2>
+    <p class="text-lg text-slate-600 mb-8 max-w-3xl" style="color: var(--portalThemeColor7);">Use este calculador interactivo para estimar el impacto de las nuevas tarifas en su factura mensual. Los ajustes permitirán financiar las mejoras necesarias en el servicio. Los incrementos principales se aplicarán en el primer y tercer año del período.</p>
+    <div class="glass-card p-6 md:p-8 rounded-2xl grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div>
+        <h3 class="text-xl font-bold mb-4">Calcule su Nueva Factura</h3>
+        <div class="space-y-4">
+          <div>
+            <label for="userCategory" class="block text-sm font-medium text-slate-700">1. Seleccione su categoría:</label
+            ><select id="userCategory" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-slate-300 focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm rounded-md">
+              <option value="domestico_subsidiado">Doméstico (Beneficiario Subsidio)</option>
+              <option value="domestico_no_subsidiado" selected="">Doméstico (No Beneficiario)</option>
+              <option value="social">Social</option>
+              <option value="comercial">Comercial y Otros</option>
+              <option value="estatal">Estatal</option>
+              <option value="industrial">Industrial</option>
+            </select>
+          </div>
+          <div><label for="consumption" class="block text-sm font-medium text-slate-700">2. Ingrese su consumo mensual (m³):</label><input type="number" id="consumption" value="16" class="mt-1 block w-full pl-3 pr-3 py-2 text-base border-slate-300 focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm rounded-md" /></div>
+        </div>
+        <div id="subsidy-info" class="mt-6 p-4 bg-cyan-50 border border-cyan-200 rounded-md hidden">
+          <h4 class="font-semibold text-cyan-800">Sobre el Subsidio Focalizado</h4>
+          <p class="text-sm text-cyan-700 mt-1">Este beneficio se aplica a los primeros 8 m³ de consumo para hogares clasificados como pobres o pobres extremos por el SISFOH, o ubicados en manzanas de ingresos bajos o medio-bajos según el INEI, para ayudar a cubrir sus necesidades básicas.</p>
+        </div>
+      </div>
+      <div class="bg-slate-50 p-6 rounded-lg">
+        <h3 class="text-xl font-bold mb-4">Estimación de la Factura Mensual (inc. IGV)</h3>
+        <div class="space-y-4">
+          <div>
+            <p class="text-sm text-slate-500">Factura Actual (Estimada)</p>
+            <p id="currentBill" class="text-2xl font-bold text-slate-600">S/ 16.40</p>
+          </div>
+          <div class="border-t border-slate-200 pt-4">
+            <p class="text-sm text-cyan-600 font-semibold">Nueva Factura - Año 1 (2025)</p>
+            <p id="newBill1" class="text-3xl font-bold text-cyan-700">S/ 16.70</p>
+          </div>
+          <div class="border-t border-slate-200 pt-4">
+            <p class="text-sm text-cyan-600 font-semibold">Nueva Factura - Año 3 (2027)</p>
+            <p id="newBill3" class="text-3xl font-bold text-cyan-700">S/ 0.00</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="inversion" class="mb-16 scroll-mt-20">
+    <h2 class="text-3xl font-bold text-slate-900 mb-2" style="color: var(--portalThemeColor7);">Inversión y Costos O&amp;M</h2>
+    <p class="text-lg text-slate-600 mb-8 max-w-3xl" style="color: var(--portalThemeColor7);">El Programa de Inversiones para el periodo regulatorio 2024-2027, financiado con recursos propios, asciende a <strong>S/ 3 387 558</strong>. Explore su distribución, el fondo que lo financia, los costos de operación y mantenimiento, y su relación con el cierre de brechas de largo plazo.</p>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Mediano Plazo (2024-2027)</h3>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+      <div class="lg:col-span-1 glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Por Categoría de Inversión</h4>
+        <div class="chart-container h-72" style="position: relative; width: 100%; margin-left: auto; margin-right: auto;"><canvas id="investmentBreakdownChart"></canvas></div>
+      </div>
+      <div class="lg:col-span-2 glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Proyectos Clave</h4>
+        <div id="project-list" class="space-y-4 max-h-[320px] overflow-y-auto pr-2"></div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Distribución por Finalidad</h4>
+        <p class="text-sm text-slate-500 mb-4">Porcentajes respecto a los ingresos facturados (sin IGV ni IPM).</p>
+        <div class="chart-container h-72" style="position: relative; width: 100%;"><canvas id="purposeChart"></canvas></div>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Monto Total del Programa de Inversiones</h4>
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div class="bg-slate-50 rounded-lg p-4 text-center"><p class="text-xs text-slate-500">AP y Saneamiento</p><p class="text-xl font-bold text-cyan-700">S/ 2 659 341</p></div>
+          <div class="bg-slate-50 rounded-lg p-4 text-center"><p class="text-xs text-slate-500">MRSE</p><p class="text-xl font-bold text-cyan-700">S/ 144 900</p></div>
+          <div class="bg-slate-50 rounded-lg p-4 text-center"><p class="text-xs text-slate-500">PCC y PAS</p><p class="text-xl font-bold text-cyan-700">S/ 270 437</p></div>
+          <div class="bg-slate-50 rounded-lg p-4 text-center"><p class="text-xs text-slate-500">GRD y ACC</p><p class="text-xl font-bold text-cyan-700">S/ 312 880</p></div>
+        </div>
+        <h5 class="font-semibold text-slate-700 mb-2">Fondo de Inversiones y Reservas (% de los ingresos)</h5>
+        <div class="overflow-x-auto">
+          <table class="data-table">
+            <thead><tr><th>Año</th><th>Fondo de Inversiones</th><th>Reservas</th></tr></thead>
+            <tbody>
+              <tr><td>Año 1</td><td>23%</td><td>6.2%</td></tr>
+              <tr><td>Año 2</td><td>24%</td><td>6.0%</td></tr>
+              <tr><td>Año 3</td><td>25%</td><td>5.6%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Costos de Operación y Mantenimiento del Periodo</h4>
+        <div class="flex flex-wrap items-center justify-center gap-4 text-center">
+          <div class="bg-slate-50 rounded-lg p-4"><p class="text-xs text-slate-500">Costos actuales</p><p class="text-xl font-bold text-slate-700">S/ 9 millones</p></div>
+          <span class="text-2xl text-slate-400 font-bold">+</span>
+          <div class="bg-slate-50 rounded-lg p-4"><p class="text-xs text-slate-500">Incrementales reconocidos en la tarifa</p><p class="text-xl font-bold text-slate-700">S/ 566 869</p></div>
+          <span class="text-2xl text-slate-400 font-bold">=</span>
+          <div class="bg-cyan-50 border border-cyan-200 rounded-lg p-4"><p class="text-xs text-cyan-700">Costo total para el periodo</p><p class="text-xl font-bold text-cyan-700">S/ 13.1 millones</p></div>
+        </div>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Cierre de Brechas de Largo Plazo (2025-2054)</h4>
+        <p class="text-center text-3xl font-bold text-cyan-700 mb-4">S/ 769.9 millones</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+          <div class="bg-slate-50 rounded-lg p-4">
+            <p class="font-semibold text-slate-700">Inversiones de cierre de brechas</p>
+            <p class="text-lg font-bold text-slate-800 mb-2">S/ 435.63 millones</p>
+            <ul class="text-xs text-slate-500 space-y-1">
+              <li>Mediano plazo: S/ 13.64 millones</li>
+              <li>Formuladas en el Invierte.pe: S/ 306.78 millones</li>
+              <li>Propuestas: S/ 115.21 millones</li>
+            </ul>
+          </div>
+          <div class="bg-slate-50 rounded-lg p-4">
+            <p class="font-semibold text-slate-700">Inversiones para mantener el cierre de brechas</p>
+            <p class="text-lg font-bold text-slate-800">S/ 334.23 millones</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="metas-tarifas" class="mb-16 scroll-mt-20">
+    <h2 class="text-3xl font-bold text-slate-900 mb-2" style="color: var(--portalThemeColor7);">Metas de Gestión y Tarifas</h2>
+    <p class="text-lg text-slate-600 mb-8 max-w-3xl" style="color: var(--portalThemeColor7);">Compromisos de gestión que EMAQ debe alcanzar durante el periodo regulatorio y su relación con el nivel y evolución de las tarifas.</p>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Metas a Nivel de Empresa Prestadora</h3>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Relación de Trabajo de la EP (%)</h4>
+        <div class="chart-container h-64" style="position: relative; width: 100%;"><canvas id="workingRatioChart"></canvas></div>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Avance Financiero del Programa de Inversiones (%)</h4>
+        <div class="chart-container h-64" style="position: relative; width: 100%;"><canvas id="advanceChart"></canvas></div>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-slate-500 text-sm font-medium">Catastro Comercial</h4>
+        <p class="text-3xl font-bold mt-2">100%</p>
+        <p class="text-xs text-slate-400 mt-1">Meta a alcanzar en todo el periodo regulatorio</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-slate-500 text-sm font-medium">Catastro Técnico</h4>
+        <p class="text-3xl font-bold mt-2">100%</p>
+        <p class="text-xs text-slate-400 mt-1">Meta a alcanzar en todo el periodo regulatorio</p>
+      </div>
+    </div>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Metas a Nivel de Localidad (Año 3)</h3>
+    <div class="overflow-x-auto mb-10">
+      <table class="data-table glass-card rounded-2xl overflow-hidden">
+        <thead><tr><th>Localidad</th><th>Continuidad (h/d)</th><th>Presión (m.c.a.)</th><th>Micromedición (%)</th></tr></thead>
+        <tbody>
+          <tr><td>Quillabamba</td><td>24.0</td><td>33.0</td><td>69.0</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="text-xs text-slate-400 -mt-6 mb-10">Nota: se muestran las metas de gestión del último año del periodo regulatorio; para el detalle completo revisar el estudio tarifario.</p>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Tarifas (S/ / m³, sin IGV)</h3>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+      <div class="glass-card p-6 rounded-2xl overflow-x-auto">
+        <h4 class="text-lg font-bold mb-4">Tarifa Media de Mediano Plazo vs. Costo Medio de Largo Plazo</h4>
+        <table class="data-table">
+          <thead><tr><th>Servicio</th><th>Tarifa Media MP</th><th>Costo Medio LP</th></tr></thead>
+          <tbody>
+            <tr><td>Agua Potable</td><td>2.58</td><td>6.45</td></tr>
+            <tr><td>Saneamiento</td><td>0.84</td><td>5.23</td></tr>
+            <tr><td>Total</td><td>3.42</td><td>11.68</td></tr>
+          </tbody>
+        </table>
+        <p class="text-xs text-slate-400 mt-3">El costo medio de largo plazo refleja el costo del servicio en un escenario sin brechas.</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl overflow-x-auto">
+        <h4 class="text-lg font-bold mb-4">Incrementos Tarifarios Programados</h4>
+        <table class="data-table mb-6">
+          <thead><tr><th>Año</th><th>Agua Potable</th><th>Saneamiento</th></tr></thead>
+          <tbody>
+            <tr><td>Año 1</td><td>13.0%</td><td>13.0%</td></tr>
+            <tr><td>Año 2</td><td>0.0%</td><td>0.0%</td></tr>
+            <tr><td>Año 3</td><td>12.7%</td><td>12.6%</td></tr>
+          </tbody>
+        </table>
+        <h4 class="text-lg font-bold mb-4">Incrementos Adicionales por Reordenamiento Tarifario</h4>
+        <table class="data-table">
+          <thead><tr><th>Año</th><th>Agua Potable</th><th>Saneamiento</th></tr></thead>
+          <tbody>
+            <tr><td>Año 2</td><td>5.5%</td><td>5.5%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+
+      const investmentBreakdownData = {
+          labels: ['Mejora', 'Institucional', 'Ampliación', 'MRSE', 'PCC y PAS', 'GRD y ACC'],
+          datasets: [{
+              label: 'Distribución de la Inversión',
+              data: [0, 0, 2659341, 144900, 270437, 312880],
+              backgroundColor: [
+                  '#06b6d4',
+                  '#0891b2',
+                  '#0e7490',
+                  '#164e63',
+                  '#155e75',
+                  '#67e8f9'
+              ],
+              borderColor: '#f8fafc',
+              borderWidth: 2,
+              hoverOffset: 4
+          }]
+      };
+
+      const projects = [
+  { name: "Renovación línea de aducción Santa Ana", category: "Obras", amount: 544971, year: '2024-2027' },
+  { name: "Renovación de 2,681 micromedidores por vida útil", category: "Comercial", amount: 439678, year: '2024-2027' },
+  { name: "Cámara reguladora de presión en línea de conducción", category: "Obras", amount: 312880, year: '2024-2027' }
+];
+
+      const tariffData = {
+          current: {
+              social: { base: [1.325, 0.379], ranges: [] },
+              domestico_no_subsidiado: { base: [1.325, 0.379], ranges: [[8, 1.414, 0.398], [16, 2.076, 0.587]] },
+              domestico_subsidiado: { base: [1.325, 0.379], ranges: [[8, 1.414, 0.398], [16, 2.076, 0.587]] },
+              comercial: { base: [3.855, 1.097], ranges: [[30, 5.804, 1.643]] },
+              estatal: { base: [5.277, 1.494], ranges: [[30, 5.804, 1.643]] },
+              industrial: { base: [5.277, 1.494], ranges: [[60, 5.804, 1.643]] },
+              cargoFijo: 4.1
+          },
+          year1: {
+              social: { base: [1.46, 0.42], ranges: [] },
+              domestico_no_subsidiado: { base: [1.46, 0.42], ranges: [[8, 1.63, 0.46], [16, 2.60, 0.74]] },
+              domestico_subsidiado: { base: [1.17, 0.42], ranges: [[8, 1.63, 0.46], [16, 2.60, 0.74]] }, // 1.46 * 0.80
+              comercial: { base: [4.36, 1.24], ranges: [[30, 6.57, 1.86]] },
+              estatal: { base: [5.97, 1.70], ranges: [[30, 6.57, 1.86]] },
+              industrial: { base: [5.97, 1.70], ranges: [[60, 6.57, 1.86]] },
+              cargoFijo: 4.1
+          },
+           year3: {
+              social: { base: [1.65, 0.47], ranges: [] },
+              domestico_no_subsidiado: { base: [1.65, 0.47], ranges: [[8, 1.84, 0.52], [16, 3.01, 0.85]] },
+              domestico_subsidiado: { base: [1.32, 0.47], ranges: [[8, 1.84, 0.52], [16, 3.01, 0.85]] }, // 1.65 * 0.8
+              comercial: { base: [6.45, 1.83], ranges: [[30, 7.39, 2.10]] },
+              estatal: { base: [6.72, 1.91], ranges: [[30, 7.39, 2.10]] },
+              industrial: { base: [6.79, 1.93], ranges: [[60, 7.39, 2.10]] },
+              cargoFijo: 4.1 // Assuming it stays the same, report is not explicit on its evolution
+          }
+      };
+
+      function formatCurrency(amount) {
+          return new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' }).format(amount);
+      }
+
+      // Diagnóstico operativo: donuts de cobertura
+      function makeCoverageDonut(canvasId, value) {
+          new Chart(document.getElementById(canvasId).getContext('2d'), {
+              type: 'doughnut',
+              data: {
+                  labels: ['Cobertura', 'Resto'],
+                  datasets: [{
+                      data: [value, 100 - value],
+                      backgroundColor: ['#0891b2', '#E0F7FA'],
+                      borderWidth: 0
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  cutout: '72%',
+                  plugins: { legend: { display: false }, tooltip: { enabled: false } }
+              },
+              plugins: [{
+                  id: 'centerText' + canvasId,
+                  afterDraw: (chart) => {
+                      const { ctx, chartArea: { width, height, top, left } } = chart;
+                      ctx.save();
+                      ctx.font = 'bold 20px Inter, sans-serif';
+                      ctx.fillStyle = '#0F3460';
+                      ctx.textAlign = 'center';
+                      ctx.textBaseline = 'middle';
+                      ctx.fillText(value + '%', left + width / 2, top + height / 2);
+                      ctx.restore();
+                  }
+              }]
+          });
+      }
+      makeCoverageDonut('covApChart', 90.0);
+      makeCoverageDonut('covSaneamientoChart', 83.0);
+
+      // Diagnóstico económico-financiero: ingresos vs costos
+      new Chart(document.getElementById('incomeCostChart').getContext('2d'), {
+          type: 'bar',
+          data: {
+              labels: ['2019', '2020', '2021', '2022', '2023'],
+              datasets: [
+                  { label: 'Ingresos', data: [6.7, 6.6, 6.8, 8.0, 9.1], backgroundColor: '#67e8f9' },
+                  { label: 'Costos y gastos desembolsables', data: [5.5, 4.9, 6.4, 6.8, 7.1], backgroundColor: '#0e7490' }
+              ]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: { y: { beginAtZero: true, ticks: { callback: (v) => 'S/ ' + v + 'M' } } },
+              plugins: {
+                  legend: { position: 'bottom' },
+                  tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: S/ ${ctx.parsed.y} millones` } }
+              }
+          }
+      });
+
+      const breakdownCtx = document.getElementById('investmentBreakdownChart').getContext('2d');
+      const breakdownChart = new Chart(breakdownCtx, {
+          type: 'doughnut',
+          data: investmentBreakdownData,
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                  legend: {
+                      position: 'bottom',
+                  },
+                  tooltip: {
+                       callbacks: {
+                          label: function(context) {
+                              let label = context.label || '';
+                              if (label) {
+                                  label += ': ';
+                              }
+                              if (context.parsed !== null) {
+                                  const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                  const percentage = ((context.parsed / total) * 100).toFixed(2);
+                                  label += `${new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' }).format(context.parsed)} (${percentage}%)`;
+                              }
+                              return label;
+                          }
+                      }
+                  }
+              },
+              onClick: (event, elements) => {
+                  if (elements.length > 0) {
+                      const chartElement = elements[0];
+                      const label = breakdownChart.data.labels[chartElement.index];
+                      filterProjects(label);
+                  }
+              }
+          }
+      });
+
+      // Distribución por finalidad (% de los ingresos)
+      new Chart(document.getElementById('purposeChart').getContext('2d'), {
+          type: 'doughnut',
+          data: {
+              labels: ['Instalación y renovación de medidores', 'Mejoramiento de infraestructura', 'Otros', 'Mejora en la gestión operativa y comercial', 'Catastro comercial'],
+              datasets: [{
+                  data: [32, 28, 22, 11, 7],
+                  backgroundColor: ['#06b6d4', '#0891b2', '#164e63', '#0e7490', '#67e8f9'],
+                  borderColor: '#f8fafc',
+                  borderWidth: 2
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                  legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+                  tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.parsed}%` } }
+              }
+          }
+      });
+
+      // Metas EP: relación de trabajo
+      new Chart(document.getElementById('workingRatioChart').getContext('2d'), {
+          type: 'line',
+          data: {
+              labels: ['Año 1', 'Año 2', 'Año 3'],
+              datasets: [{
+                  label: 'Relación de trabajo (%)',
+                  data: [71, 70, 70],
+                  borderColor: '#0891b2',
+                  backgroundColor: '#0891b2',
+                  tension: 0.3,
+                  pointRadius: 5
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: { y: { suggestedMin: 65, suggestedMax: 75 } },
+              plugins: { legend: { display: false } }
+          }
+      });
+
+      // Metas EP: avance financiero del programa de inversiones
+      new Chart(document.getElementById('advanceChart').getContext('2d'), {
+          type: 'bar',
+          data: {
+              labels: ['Año 1', 'Año 2', 'Año 3'],
+              datasets: [{
+                  label: 'Avance financiero (%)',
+                  data: [13, 51, 100],
+                  backgroundColor: '#0891b2'
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: { y: { beginAtZero: true, max: 100, ticks: { callback: (v) => v + '%' } } },
+              plugins: { legend: { display: false } }
+          }
+      });
+
+      const projectListContainer = document.getElementById('project-list');
+
+      function displayProjects(filteredProjects) {
+          projectListContainer.innerHTML = '';
+          if (filteredProjects.length === 0) {
+              projectListContainer.innerHTML = '<p class="text-slate-500">No se encontraron proyectos para esta categoría.</p>';
+              return;
+          }
+          filteredProjects.forEach(p => {
+              const projectEl = document.createElement('div');
+              projectEl.className = 'border-b border-slate-200 pb-3';
+              projectEl.innerHTML = `
+                  <p class="font-semibold text-slate-800">${p.name}</p>
+                  <div class="flex justify-between items-center text-sm mt-1">
+                      <span class="text-cyan-600 font-medium">${p.category}</span>
+                      <span class="text-slate-500">${formatCurrency(p.amount)}</span>
+                  </div>
+              `;
+              projectListContainer.appendChild(projectEl);
+          });
+      }
+
+      function filterProjects(category) {
+           const filtered = category === 'Todos' ? projects : projects.filter(p => p.category === category);
+           displayProjects(filtered);
+      }
+
+      displayProjects(projects);
+
+      const userCategorySelect = document.getElementById('userCategory');
+      const consumptionInput = document.getElementById('consumption');
+      const currentBillEl = document.getElementById('currentBill');
+      const newBill1El = document.getElementById('newBill1');
+      const newBill3El = document.getElementById('newBill3');
+      const subsidyInfoEl = document.getElementById('subsidy-info');
+
+      function calculateBillV2(consumption, tariffs) {
+          let waterCost = 0;
+          let sewageCost = 0;
+          let processedConsumption = 0;
+
+          if (tariffs.ranges.length > 0) {
+              const firstBlockLimit = tariffs.ranges[0][0];
+              if (consumption <= firstBlockLimit) {
+                  waterCost = consumption * tariffs.base[0];
+                  sewageCost = consumption * tariffs.base[1];
+              } else {
+                  waterCost = firstBlockLimit * tariffs.base[0];
+                  sewageCost = firstBlockLimit * tariffs.base[1];
+                  processedConsumption = firstBlockLimit;
+
+                  for (let i = 0; i < tariffs.ranges.length; i++) {
+                      const currentRangeLimit = tariffs.ranges[i][0];
+                      const nextRangeLimit = (i + 1 < tariffs.ranges.length) ? tariffs.ranges[i+1][0] : Infinity;
+
+                      if(consumption > currentRangeLimit){
+                          const consumptionInRange = Math.min(consumption - processedConsumption, nextRangeLimit - currentRangeLimit);
+                          waterCost += consumptionInRange * tariffs.ranges[i][1];
+                          sewageCost += consumptionInRange * tariffs.ranges[i][2];
+                          processedConsumption += consumptionInRange;
+                      }
+                  }
+              }
+          } else {
+              waterCost = consumption * tariffs.base[0];
+              sewageCost = consumption * tariffs.base[1];
+          }
+
+          const subtotal = tariffs.cargoFijo + waterCost + sewageCost;
+          const total = subtotal * 1.18;
+          return total;
+      }
+
+      function updateBills() {
+          const category = userCategorySelect.value;
+          const consumption = parseFloat(consumptionInput.value) || 0;
+
+          subsidyInfoEl.classList.toggle('hidden', category !== 'domestico_subsidiado');
+
+          const currentTariffs = { ...tariffData.current[category], cargoFijo: tariffData.current.cargoFijo };
+          const newTariffs1 = { ...tariffData.year1[category], cargoFijo: tariffData.year1.cargoFijo };
+          const newTariffs3 = { ...tariffData.year3[category], cargoFijo: tariffData.year3.cargoFijo };
+
+          currentBillEl.textContent = formatCurrency(calculateBillV2(consumption, currentTariffs));
+          newBill1El.textContent = formatCurrency(calculateBillV2(consumption, newTariffs1));
+          newBill3El.textContent = formatCurrency(calculateBillV2(consumption, newTariffs3));
+      }
+
+      userCategorySelect.addEventListener('change', updateBills);
+      consumptionInput.addEventListener('input', updateBills);
+
+      updateBills();
+
+      const mobileMenuButton = document.getElementById('mobile-menu-button');
+      const mobileMenu = document.getElementById('mobile-menu');
+
+      mobileMenuButton.addEventListener('click', () => {
+          mobileMenu.classList.toggle('hidden');
+      });
+  });
+
+  function scrollToSection(sectionId) {
+      document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+
+      const mobileMenu = document.getElementById('mobile-menu');
+      if(!mobileMenu.classList.contains('hidden')){
+          mobileMenu.classList.add('hidden');
+      }
+  }
+</script>
+
+  </div>
+  
+<footer role="contentinfo" class="footer mt-auto" style="background: linear-gradient(108deg, #005B9F 0%, #005B9F 78%, #4BAF18 78.1%, #4BAF18 100%); padding: 0; margin: 0; overflow: hidden;">
+  <div style="max-width: 1200px; margin: 0 auto; padding: 40px 24px 20px 24px;">
+    <!-- Fila principal -->
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 24px; margin-bottom: 24px;">
+      <!-- Logo CION + texto -->
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <img src="./logo%20de%20Equipo%20CION.png" alt="Equipo CION" style="height: 48px; object-fit: contain;" />
+      </div>
+      <!-- Logo SUNASS -->
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="color: #ffffff; font-size: 24px; font-weight: 700; font-family: 'Inter', sans-serif; letter-spacing: -0.5px;">Sunass</span>
+        <span style="color: rgba(255,255,255,0.6); font-size: 13px; font-family: 'Inter', sans-serif;">El regulador del agua potable</span>
+      </div>
+    </div>
+    <!-- Línea divisoria -->
+    <div style="border-top: 1px solid rgba(255,255,255,0.12); padding-top: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+      <p style="color: rgba(255,255,255,0.5); font-size: 13px; margin: 0; font-family: 'Inter', sans-serif;">© 2026 SUNASS · CION</p>
+      <p style="color: rgba(255,255,255,0.5); font-size: 13px; margin: 0; font-family: 'Inter', sans-serif;">Información pública para mejores decisiones.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

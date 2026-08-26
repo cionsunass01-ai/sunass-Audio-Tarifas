@@ -1,0 +1,579 @@
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><!-- Application Structure Plan: The SPA mirrors the official SUNASS regulatory fact sheet (ficha) for EPS Sierra Central. Sections: 1) Datos Generales. 2) Diagnósticos (operational, commercial, economic-financial — including two unusual findings for this EP: a SUNAT tax-debt repayment schedule embedded in the tariff study, and an excess-personnel / unauthorized-collective-bargaining flag explicitly raised by SUNASS pending review by the Órgano de Control Institucional). 3) Inversión y Costos O&M. 4) Metas de Gestión y Tarifas — including the full block tariff structure (Cuadro 101), which this ficha does disclose in full, unlike some other EPS fichas. No "Mi Recibo" interactive bill calculator is included, consistent with the pattern used for the other recently-added EPS pages. --><!-- CONFIRMATION: NO SVG graphics used beyond inline icon paths already present in the shared header/nav markup. NO Mermaid JS used. --><title>Panel Interactivo: Ficha Regulatoria EPS Sierra Central 2025-2029</title>
+<style>
+  :root {
+    --navy: #0B2341;
+    --navy-light: #0F3460;
+    --cyan-accent: #00BCD4;
+    --cyan-light: #E0F7FA;
+    --sunass-blue: #0071CE;
+    --sunass-dark-blue: #005B9F;
+    --sunass-green: #5DB92E;
+    --bg-page: #ebf7ff;
+  }
+  body { background-color: var(--bg-page) !important; font-family: 'Inter', sans-serif; }
+
+  .glass-card {
+    background: #ffffff !important;
+    border: 1px solid #E8ECF1;
+    border-left: 4px solid var(--cyan-accent) !important;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+    transition: box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+  .glass-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+    border-color: #D0D5DD;
+    border-left-color: var(--sunass-blue) !important;
+    transform: none;
+  }
+
+  .header-bg {
+    background: rgba(247, 251, 252, 0.92) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid #E0E7EE !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04) !important;
+  }
+
+  .text-sunass { color: var(--sunass-blue) !important; }
+  .bg-sunass { background-color: var(--sunass-blue) !important; }
+
+  h1[style*="--portalThemeColor"],
+  h2[style*="--portalThemeColor"],
+  h3[style*="--portalThemeColor"],
+  p[style*="--portalThemeColor"] {
+    color: #1e293b !important;
+  }
+  section h2 { color: #1e293b !important; }
+  section > p { color: #475569 !important; }
+
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table th, .data-table td { padding: 0.6rem 0.75rem; text-align: center; font-size: 0.875rem; }
+  .data-table thead th { background-color: #0F3460; color: #ffffff; font-weight: 600; }
+  .data-table tbody tr:nth-child(even) { background-color: #F1F8FB; }
+  .data-table td:first-child, .data-table th:first-child { text-align: left; font-weight: 600; color: #1e293b; }
+
+  .alert-card { background: #FFF7ED !important; border: 1px solid #FED7AA; border-left: 4px solid #EA580C !important; border-radius: 12px; }
+</style>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" /><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+<header class="header-bg sticky top-0 z-50">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <h1 class="text-xl md:text-2xl font-bold" style="color: var(--navy)">EPS Sierra Central S.R.L.</h1>
+      <nav class="hidden md:flex space-x-6"><a onclick="scrollToSection('datos-generales')" class="nav-link text-slate-700 opacity-80 hover:opacity-100 hover:text-blue-700 font-medium border-b-2 border-transparent pb-1" style="cursor:pointer;">Datos Generales</a><a onclick="scrollToSection('diagnosticos')" class="nav-link text-slate-700 opacity-80 hover:opacity-100 hover:text-blue-700 font-medium border-b-2 border-transparent pb-1" style="cursor:pointer;">Diagnósticos</a><a onclick="scrollToSection('inversion')" class="nav-link text-slate-700 opacity-80 hover:opacity-100 hover:text-blue-700 font-medium border-b-2 border-transparent pb-1" style="cursor:pointer;">Inversión y O&amp;M</a><a onclick="scrollToSection('metas-tarifas')" class="nav-link text-slate-700 opacity-80 hover:opacity-100 hover:text-blue-700 font-medium border-b-2 border-transparent pb-1" style="cursor:pointer;">Metas y Tarifas</a></nav>
+      <button id="mobile-menu-button" class="md:hidden text-slate-800">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+      </button>
+    </div>
+  </div>
+  <div id="mobile-menu" class="md:hidden hidden bg-white border-t"><a onclick="scrollToSection('datos-generales')" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-50">Datos Generales</a><a onclick="scrollToSection('diagnosticos')" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-50">Diagnósticos</a><a onclick="scrollToSection('inversion')" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-50">Inversión y O&amp;M</a><a onclick="scrollToSection('metas-tarifas')" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-50">Metas y Tarifas</a></div>
+</header>
+
+<main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+  <section id="datos-generales" class="mb-16 scroll-mt-20">
+    <h2 class="text-3xl font-bold text-slate-900 mb-2" style="color: var(--portalThemeColor7);">Ficha Regulatoria 2025-2029</h2>
+    <p class="text-lg text-slate-600 mb-8 max-w-3xl">Datos generales de la EPS SIERRA CENTRAL S.R.L. según el proyecto de estudio tarifario de SUNASS para el periodo regulatorio 2025-2029, en la localidad de Tarma (provincia de Tarma, región Junín).</p>
+
+    <div class="glass-card p-6 rounded-2xl mb-8">
+      <ul class="space-y-2 text-slate-700 text-sm md:text-base">
+        <li class="flex items-start"><i class="fa-solid fa-file-signature text-cyan-600 mr-3 mt-1 w-4 text-center"></i>El estudio tarifario fue elaborado de oficio por la Dirección de Regulación Tarifaria (DRT), mediante Resolución de Regulación Tarifaria N° 00010-2024-SUNASS-DRT, debido a que la EP no presentó su Plan Maestro Optimizado (PMO) dentro de los plazos establecidos.</li>
+        <li class="flex items-start"><i class="fa-solid fa-layer-group text-cyan-600 mr-3 mt-1 w-4 text-center"></i>El nivel de aplicación del esquema regulatorio de empresa modelo adaptada para el periodo 2025-2029 es el <strong>Nivel Inicial</strong>, según Oficio N° 00204-2024-SUNASS-DRT.</li>
+        <li class="flex items-start"><i class="fa-solid fa-users text-cyan-600 mr-3 mt-1 w-4 text-center"></i>El proyecto de estudio tarifario fue presentado en audiencia pública virtual el 19 de junio de 2024.</li>
+      </ul>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      <div class="stat-card glass-card p-6 rounded-2xl">
+        <h3 class="text-slate-500 text-sm font-medium">Localidad</h3>
+        <p class="text-2xl font-bold mt-2">Tarma</p>
+        <p class="text-xs text-slate-400 mt-1">Región Junín</p>
+      </div>
+      <div class="stat-card glass-card p-6 rounded-2xl">
+        <h3 class="text-slate-500 text-sm font-medium">Tamaño de Empresa</h3>
+        <p class="text-3xl font-bold mt-2">Pequeña</p>
+        <p class="text-xs text-slate-400 mt-1">Clasificación SUNASS</p>
+      </div>
+      <div class="stat-card glass-card p-6 rounded-2xl">
+        <h3 class="text-slate-500 text-sm font-medium">Periodo Regulatorio</h3>
+        <p class="text-3xl font-bold mt-2">4 años</p>
+        <p class="text-xs text-slate-400 mt-1">2025 - 2029</p>
+      </div>
+      <div class="stat-card glass-card p-6 rounded-2xl">
+        <h3 class="text-slate-500 text-sm font-medium">Población Bajo Ámbito</h3>
+        <p class="text-3xl font-bold mt-2">41 159</p>
+        <p class="text-xs text-slate-400 mt-1">Habitantes (2023)</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+      <div class="stat-card glass-card p-6 rounded-2xl" style="border-left-width: 4px; border-left-style: solid; border-left-color: #0071CE;">
+        <h3 class="text-slate-500 text-sm font-medium">Conexiones Totales de AP</h3>
+        <p class="text-3xl font-bold mt-2">11 716</p>
+        <p class="text-xs text-slate-400 mt-1">Agua potable</p>
+      </div>
+      <div class="stat-card glass-card p-6 rounded-2xl" style="border-left-width: 4px; border-left-style: solid; border-left-color: #0071CE;">
+        <h3 class="text-slate-500 text-sm font-medium">Conexiones Activas de AP</h3>
+        <p class="text-3xl font-bold mt-2">10 506</p>
+        <p class="text-xs text-slate-400 mt-1">88.3% del total, dic. 2023</p>
+      </div>
+    </div>
+
+    <div class="glass-card rounded-2xl overflow-hidden overflow-x-auto">
+      <table class="data-table">
+        <thead><tr><th>Localidad</th><th>Conexiones Activas de AP (dic. 2023)</th><th>Continuidad (h/d)</th><th>Presión (m.c.a.)</th></tr></thead>
+        <tbody><tr><td>Tarma</td><td>10 506</td><td>20.9</td><td>21.1</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="diagnosticos" class="mb-16 scroll-mt-20">
+    <h2 class="text-3xl font-bold text-slate-900 mb-2">Diagnósticos</h2>
+    <p class="text-lg text-slate-600 mb-8 max-w-3xl">Situación operativa, comercial y económico-financiera de la empresa que sustenta el plan de inversiones.</p>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Diagnóstico Operativo</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      <div class="glass-card p-6 rounded-2xl text-center">
+        <h4 class="text-slate-500 text-sm font-medium mb-2">Cobertura de Agua Potable</h4>
+        <div class="chart-container h-32" style="position: relative; width: 100%;"><canvas id="covApChart"></canvas></div>
+      </div>
+      <div class="glass-card p-6 rounded-2xl text-center">
+        <h4 class="text-slate-500 text-sm font-medium mb-2">Cobertura de Alcantarillado</h4>
+        <div class="chart-container h-32" style="position: relative; width: 100%;"><canvas id="covSaneamientoChart"></canvas></div>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-slate-500 text-sm font-medium">Agua No Facturada (ANF)</h4>
+        <p class="text-3xl font-bold mt-2">44.7%</p>
+        <p class="text-xs text-slate-400 mt-1">Periodo enero-diciembre 2023</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-slate-500 text-sm font-medium">Aguas Residuales Tratadas (PTAR)</h4>
+        <p class="text-3xl font-bold mt-2">0%</p>
+        <p class="text-xs text-slate-400 mt-1">Sin PTAR; se vierten sin tratar a los ríos Tarma, Huantay y Collana</p>
+      </div>
+    </div>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Diagnóstico Comercial</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      <div class="glass-card p-6 rounded-2xl">
+        <span class="text-cyan-600 text-2xl"><i class="fa-solid fa-gauge"></i></span>
+        <p class="text-3xl font-bold mt-2">30.4%</p>
+        <p class="text-xs text-slate-400 mt-1">Efectividad de la micromedición (dic. 2023)</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <span class="text-cyan-600 text-2xl"><i class="fa-solid fa-plug-circle-check"></i></span>
+        <p class="text-3xl font-bold mt-2">88.3%</p>
+        <p class="text-xs text-slate-400 mt-1">Conexiones activas de agua potable</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <span class="text-cyan-600 text-2xl"><i class="fa-solid fa-map-location-dot"></i></span>
+        <p class="text-3xl font-bold mt-2">0%</p>
+        <p class="text-xs text-slate-400 mt-1">Catastro comercial georreferenciado</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <span class="text-cyan-600 text-2xl"><i class="fa-solid fa-users"></i></span>
+        <p class="text-3xl font-bold mt-2">No</p>
+        <p class="text-xs text-slate-400 mt-1">Focalización de subsidios (se implementará desde el primer año regulatorio)</p>
+      </div>
+    </div>
+    <p class="text-xs text-slate-400 -mt-6 mb-10">Del parque de medidores, el 74% tiene una antigüedad mayor a 5 años (dic. 2023).</p>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Diagnóstico Económico-Financiero</h3>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+      <div class="lg:col-span-2 glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Ingresos y Costos 2019-2023 (miles de S/)</h4>
+        <div class="chart-container h-72" style="position: relative; width: 100%;"><canvas id="incomeCostChart"></canvas></div>
+        <p class="text-xs text-slate-400 mt-3">Ingresos por prestación de servicios de saneamiento; Costos comprende costo de ventas, gastos de administración y gastos de ventas y distribución. La EP registró utilidad neta negativa en 2022 (-S/ 210 mil) y 2023 (-S/ 79 mil).</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl space-y-4">
+        <div>
+          <p class="text-sm text-slate-500">Saldo inicial para financiamiento de inversiones</p>
+          <p class="text-2xl font-bold text-cyan-700">S/ 121 180</p>
+        </div>
+        <div class="border-t border-slate-200 pt-4">
+          <p class="text-sm text-slate-500">Cronograma de pago de obligaciones de deuda</p>
+          <p class="text-2xl font-bold text-cyan-700">S/ 350 634</p>
+          <p class="text-xs text-slate-400 mt-1">Deuda tributaria con SUNAT (fraccionamiento), a cancelar entre los años 1 y 3 del periodo regulatorio.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert-card p-6 rounded-2xl mb-10">
+      <h4 class="text-lg font-bold mb-2 text-orange-800"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Observación de SUNASS sobre gastos de personal</h4>
+      <p class="text-sm text-slate-700 mb-2">La EP registra 6.7 trabajadores por cada mil conexiones, muy por encima del promedio nacional (2.7) y del promedio de empresas prestadoras pequeñas (4.3), lo que evidencia personal en exceso. Además, entre 2019 y 2023 se pagó un total de <strong>S/ 606 788</strong> por conceptos derivados de negociaciones colectivas, sin laudos arbitrales ni sentencias judiciales que las respalden.</p>
+      <p class="text-xs text-slate-500">SUNASS ha señalado que esta situación debe ser materia de evaluación de su legalidad por parte del Órgano de Control Institucional (OCI) u otra entidad competente.</p>
+    </div>
+
+    <div class="glass-card p-6 rounded-2xl">
+      <h4 class="text-lg font-bold mb-4">Incrementos Tarifarios por IPM Aplicados (2021-2022)</h4>
+      <p class="text-sm text-slate-600 mb-4">A diferencia de otras EPS, Sierra Central sí aplicó la totalidad de los incrementos por acumulación del Índice de Precios al por Mayor (IPM) a los que tuvo derecho durante el periodo regulatorio anterior.</p>
+      <div class="overflow-x-auto">
+        <table class="data-table">
+          <thead><tr><th>Periodo IPM</th><th>Incremento</th><th>Fecha de aplicación</th></tr></thead>
+          <tbody>
+            <tr><td>Nov. 2018 - Feb. 2021</td><td>3.98%</td><td>Abr. 2021</td></tr>
+            <tr><td>Mar. 2021 - Jun. 2021</td><td>4.58%</td><td>Set. 2021</td></tr>
+            <tr><td>Jul. 2021 - Ago. 2021</td><td>3.39%</td><td>Nov. 2021</td></tr>
+            <tr><td>Set. 2021 - Feb. 2022</td><td>3.04%</td><td>May. 2022</td></tr>
+            <tr><td>Mar. 2022 - Abr. 2022</td><td>3.10%</td><td>Jul. 2022</td></tr>
+            <tr><td>May. 2022 - Jul. 2022</td><td>4.07%</td><td>Oct. 2022</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="inversion" class="mb-16 scroll-mt-20">
+    <h2 class="text-3xl font-bold text-slate-900 mb-2">Inversión y Costos O&amp;M</h2>
+    <p class="text-lg text-slate-600 mb-8 max-w-3xl">El Programa de Inversiones para el periodo regulatorio 2025-2029, financiado con recursos propios, asciende a <strong>S/ 1 952 210</strong>. Explore su distribución, el fondo que lo financia, los costos de operación y mantenimiento, y su relación con el cierre de brechas de largo plazo.</p>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Mediano Plazo (2025-2029)</h3>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Distribución por Finalidad</h4>
+        <p class="text-sm text-slate-500 mb-4">Porcentajes respecto al total del programa de inversiones (S/ 1 952 210).</p>
+        <div class="chart-container h-80" style="position: relative; width: 100%; margin-left: auto; margin-right: auto;"><canvas id="purposeChart"></canvas></div>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Monto Total del Programa de Inversiones</h4>
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div class="bg-slate-50 rounded-lg p-4 text-center"><p class="text-xs text-slate-500">AP y Saneamiento</p><p class="text-xl font-bold text-cyan-700">S/ 1 692 577</p></div>
+          <div class="bg-slate-50 rounded-lg p-4 text-center"><p class="text-xs text-slate-500">PCC</p><p class="text-xl font-bold text-cyan-700">S/ 87 500</p></div>
+          <div class="bg-slate-50 rounded-lg p-4 text-center"><p class="text-xs text-slate-500">GRD</p><p class="text-xl font-bold text-cyan-700">S/ 95 921</p></div>
+          <div class="bg-slate-50 rounded-lg p-4 text-center"><p class="text-xs text-slate-500">MRSE</p><p class="text-xl font-bold text-cyan-700">S/ 76 211</p></div>
+        </div>
+        <h5 class="font-semibold text-slate-700 mb-2">Fondo de Inversiones y Reservas (% de los ingresos)</h5>
+        <div class="overflow-x-auto">
+          <table class="data-table">
+            <thead><tr><th>Año</th><th>Fondo de Inversiones</th><th>Reservas (total)</th></tr></thead>
+            <tbody>
+              <tr><td>Año 1</td><td>3.5%</td><td>5.3%</td></tr>
+              <tr><td>Año 2</td><td>7.0%</td><td>5.7%</td></tr>
+              <tr><td>Año 3</td><td>7.0%</td><td>6.6%</td></tr>
+              <tr><td>Año 4</td><td>12.0%</td><td>6.3%</td></tr>
+              <tr><td>Año 5</td><td>12.0%</td><td>6.1%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="text-xs text-slate-400 mt-2">Reservas: MRSE, GRD, PCC, mantenimiento de infraestructuras/reposición de equipos, y atención del servicio de agua potable ante interrupciones.</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Costos de Operación y Mantenimiento del Periodo</h4>
+        <div class="flex flex-wrap items-center justify-center gap-4 text-center">
+          <div class="bg-slate-50 rounded-lg p-4"><p class="text-xs text-slate-500">Costos actuales</p><p class="text-xl font-bold text-slate-700">S/ 3.69 millones</p></div>
+          <span class="text-2xl text-slate-400 font-bold">+</span>
+          <div class="bg-slate-50 rounded-lg p-4"><p class="text-xs text-slate-500">Incrementales reconocidos en la tarifa</p><p class="text-xl font-bold text-slate-700">S/ 1.39 millones</p></div>
+          <span class="text-2xl text-slate-400 font-bold">=</span>
+          <div class="bg-cyan-50 border border-cyan-200 rounded-lg p-4"><p class="text-xs text-cyan-700">Costo total para el periodo</p><p class="text-xl font-bold text-cyan-700">S/ 5.08 millones</p></div>
+        </div>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Cierre de Brechas de Largo Plazo (2025-2054)</h4>
+        <p class="text-center text-3xl font-bold text-cyan-700 mb-4">S/ 203.1 millones</p>
+        <div class="grid grid-cols-2 gap-3 text-xs">
+          <div class="bg-slate-50 rounded-lg p-3"><p class="font-semibold text-slate-700">Mediano plazo</p><p class="text-base font-bold text-slate-800">S/ 2.0 millones</p></div>
+          <div class="bg-slate-50 rounded-lg p-3"><p class="font-semibold text-slate-700">Formuladas en Invierte.pe</p><p class="text-base font-bold text-slate-800">S/ 165.2 millones</p></div>
+          <div class="bg-slate-50 rounded-lg p-3"><p class="font-semibold text-slate-700">Propuestas para cerrar brecha</p><p class="text-base font-bold text-slate-800">S/ 22.6 millones</p></div>
+          <div class="bg-slate-50 rounded-lg p-3"><p class="font-semibold text-slate-700">Para mantener el cierre de brechas</p><p class="text-base font-bold text-slate-800">S/ 13.4 millones</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="metas-tarifas" class="mb-16 scroll-mt-20">
+    <h2 class="text-3xl font-bold text-slate-900 mb-2">Metas de Gestión y Tarifas</h2>
+    <p class="text-lg text-slate-600 mb-8 max-w-3xl">Compromisos de gestión que la EPS Sierra Central debe alcanzar durante el periodo regulatorio y su relación con el nivel y evolución de las tarifas.</p>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Metas a Nivel de Empresa Prestadora</h3>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Relación de Trabajo de la EP (%)</h4>
+        <div class="chart-container h-64" style="position: relative; width: 100%;"><canvas id="workingRatioChart"></canvas></div>
+        <p class="text-xs text-slate-400 mt-2">Una relación de trabajo menor indica menores costos operativos respecto a los ingresos.</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-lg font-bold mb-4">Avance Financiero del Programa de Inversiones (%)</h4>
+        <div class="chart-container h-64" style="position: relative; width: 100%;"><canvas id="advanceChart"></canvas></div>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-base font-bold mb-3">Reserva PCC</h4>
+        <div class="chart-container h-48" style="position: relative; width: 100%;"><canvas id="pccChart"></canvas></div>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-base font-bold mb-3">Reserva MRSE</h4>
+        <div class="chart-container h-48" style="position: relative; width: 100%;"><canvas id="mrseChart"></canvas></div>
+      </div>
+      <div class="glass-card p-6 rounded-2xl">
+        <h4 class="text-base font-bold mb-3">Reserva GRD</h4>
+        <div class="chart-container h-48" style="position: relative; width: 100%;"><canvas id="grdChart"></canvas></div>
+      </div>
+    </div>
+    <p class="text-xs text-slate-400 mb-10">Otras metas del periodo: micromedición de la EP (de 48% en el Año 1 a 65% en el Año 5), reemplazo de 1 216 medidores en total (Años 2 a 5), Catastro Técnico al 100% desde el Año 4, y Catastro Comercial al 100% desde el Año 3.</p>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Metas a Nivel de Localidad (Año 5)</h3>
+    <div class="overflow-x-auto mb-2">
+      <table class="data-table glass-card rounded-2xl overflow-hidden">
+        <thead><tr><th>Localidad</th><th>Continuidad (h/d)</th><th>Presión (m.c.a.)</th></tr></thead>
+        <tbody><tr><td>Tarma</td><td>Reporte informativo tarifario</td><td>Reporte informativo tarifario</td></tr></tbody>
+      </table>
+    </div>
+    <p class="text-xs text-slate-400 mb-10">Nota: la ODS Junín determinará el valor del año base de continuidad y presión recién en el segundo año regulatorio, mediante manómetro con data logger; la ficha no publica sus valores numéricos meta.</p>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Tarifas (S/ / m³, sin IGV)</h3>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+      <div class="glass-card p-6 rounded-2xl overflow-x-auto">
+        <h4 class="text-lg font-bold mb-4">Tarifa Media de Mediano Plazo vs. Costo Medio de Largo Plazo</h4>
+        <table class="data-table">
+          <thead><tr><th>Servicio</th><th>Tarifa Media MP</th><th>Costo Medio LP</th></tr></thead>
+          <tbody>
+            <tr><td>Agua Potable</td><td>1.432</td><td>4.331</td></tr>
+            <tr><td>Saneamiento</td><td>0.433</td><td>3.206</td></tr>
+            <tr><td>Total</td><td>1.865</td><td>7.537</td></tr>
+          </tbody>
+        </table>
+        <p class="text-xs text-slate-400 mt-3">El costo medio de largo plazo refleja el costo del servicio en un escenario de cierre total de brechas de cobertura y calidad a 30 años.</p>
+      </div>
+      <div class="glass-card p-6 rounded-2xl overflow-x-auto">
+        <h4 class="text-lg font-bold mb-4">Incrementos Tarifarios Programados</h4>
+        <table class="data-table mb-6">
+          <thead><tr><th>Año</th><th>Agua Potable</th><th>Saneamiento</th></tr></thead>
+          <tbody>
+            <tr><td>Año 1</td><td>20.0%</td><td>20.0%</td></tr>
+            <tr><td>Año 2</td><td>11.0%</td><td>11.0%</td></tr>
+            <tr><td>Año 3</td><td>0.0%</td><td>0.0%</td></tr>
+            <tr><td>Año 4</td><td>5.0%</td><td>5.0%</td></tr>
+            <tr><td>Año 5</td><td>0.0%</td><td>0.0%</td></tr>
+          </tbody>
+        </table>
+        <h4 class="text-lg font-bold mb-4">Incrementos Adicionales por Reordenamiento Tarifario</h4>
+        <table class="data-table">
+          <thead><tr><th>Año</th><th>Agua Potable</th><th>Saneamiento</th></tr></thead>
+          <tbody>
+            <tr><td>Año 1</td><td>0.6%</td><td>0.6%</td></tr>
+            <tr><td>Año 3</td><td>0.5%</td><td>0.5%</td></tr>
+            <tr><td>Año 5</td><td>1.9%</td><td>1.9%</td></tr>
+          </tbody>
+        </table>
+        <p class="text-xs text-slate-400 mt-3">El subsidio cruzado focalizado se implementará a partir del primer año regulatorio. Cargo fijo: S/ 1.90/mes.</p>
+      </div>
+    </div>
+
+    <h3 class="text-xl font-bold text-slate-800 mb-4">Estructura Tarifaria — Localidad de Tarma (Año 1)</h3>
+    <div class="glass-card rounded-2xl overflow-hidden overflow-x-auto mb-4">
+      <table class="data-table">
+        <thead><tr><th>Categoría</th><th>Rango (m³/mes)</th><th>Tarifa Agua (S//m³)</th><th>Tarifa Saneamiento (S//m³)</th><th>Asignación (m³/mes)</th></tr></thead>
+        <tbody>
+          <tr><td>Social</td><td>0 a más</td><td>0.63</td><td>0.17</td><td>18</td></tr>
+          <tr><td>Doméstico</td><td>0 a 8</td><td>0.69</td><td>0.19</td><td rowspan="3" style="vertical-align:middle;">Reporte informativo tarifario</td></tr>
+          <tr><td>Doméstico</td><td>8 a 20</td><td>0.88</td><td>0.24</td></tr>
+          <tr><td>Doméstico</td><td>20 a más</td><td>1.84</td><td>0.50</td></tr>
+          <tr><td>Estatal</td><td>0 a más</td><td>2.01</td><td>0.55</td><td>50</td></tr>
+          <tr><td>Comercial y otros</td><td>0 a más</td><td>2.23</td><td>0.61</td><td>15</td></tr>
+          <tr><td>Industrial</td><td>0 a más</td><td>2.43</td><td>0.66</td><td>50</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="text-xs text-slate-400">Cargo fijo: S/ 1.90/mes para todas las categorías. La asignación máxima de consumo doméstico varía por año regulatorio (10-13-15 m³ en los años 1 y 2; 15 m³ del año 3 en adelante), por lo que se remite al estudio tarifario.</p>
+  </section>
+</main>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+
+      // Diagnóstico operativo: donuts de cobertura
+      function makeCoverageDonut(canvasId, value) {
+          new Chart(document.getElementById(canvasId).getContext('2d'), {
+              type: 'doughnut',
+              data: {
+                  labels: ['Cobertura', 'Resto'],
+                  datasets: [{
+                      data: [value, 100 - value],
+                      backgroundColor: ['#0891b2', '#E0F7FA'],
+                      borderWidth: 0
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  cutout: '72%',
+                  plugins: { legend: { display: false }, tooltip: { enabled: false } }
+              },
+              plugins: [{
+                  id: 'centerText' + canvasId,
+                  afterDraw: (chart) => {
+                      const { ctx, chartArea: { width, height, top, left } } = chart;
+                      ctx.save();
+                      ctx.font = 'bold 20px Inter, sans-serif';
+                      ctx.fillStyle = '#0F3460';
+                      ctx.textAlign = 'center';
+                      ctx.textBaseline = 'middle';
+                      ctx.fillText(value + '%', left + width / 2, top + height / 2);
+                      ctx.restore();
+                  }
+              }]
+          });
+      }
+      makeCoverageDonut('covApChart', 78.5);
+      makeCoverageDonut('covSaneamientoChart', 76.7);
+
+      new Chart(document.getElementById('incomeCostChart').getContext('2d'), {
+          type: 'bar',
+          data: {
+              labels: ['2019', '2020', '2021', '2022', '2023'],
+              datasets: [
+                  { label: 'Ingresos', data: [2657, 2288, 2564, 3036, 3589], backgroundColor: '#67e8f9' },
+                  { label: 'Costos y gastos desembolsables', data: [2524, 2309, 2827, 3623, 3743], backgroundColor: '#0e7490' }
+              ]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: { y: { beginAtZero: true, ticks: { callback: (v) => 'S/ ' + v + 'K' } } },
+              plugins: {
+                  legend: { position: 'bottom' },
+                  tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: S/ ${ctx.parsed.y} mil` } }
+              }
+          }
+      });
+
+      // Distribución del programa de inversiones por finalidad
+      new Chart(document.getElementById('purposeChart').getContext('2d'), {
+          type: 'doughnut',
+          data: {
+              labels: ['Institucional', 'Ampliación (instalación de medidores)', 'Mejoramiento (reemplazo de medidores)', 'Gestión del Riesgo de Desastres (GRD)', 'Plan de Control de Calidad (PCC)', 'Mecanismos de Retribución por Servicios Ecosistémicos (MRSE)'],
+              datasets: [{
+                  data: [46.6, 24.1, 16.1, 4.9, 4.5, 3.9],
+                  backgroundColor: ['#0071CE', '#005B9F', '#00447A', '#0B2341', '#5DB92E', '#00BCD4'],
+                  borderColor: '#f8fafc',
+                  borderWidth: 2
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                  legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+                  tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.parsed}%` } }
+              }
+          }
+      });
+
+      // Metas EP: relación de trabajo
+      new Chart(document.getElementById('workingRatioChart').getContext('2d'), {
+          type: 'line',
+          data: {
+              labels: ['Año 1', 'Año 2', 'Año 3', 'Año 4', 'Año 5'],
+              datasets: [{
+                  label: 'Relación de trabajo (%)',
+                  data: [90, 83, 83, 80, 80],
+                  borderColor: '#0891b2',
+                  backgroundColor: '#0891b2',
+                  tension: 0.3,
+                  pointRadius: 5
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: { y: { suggestedMin: 70, suggestedMax: 95 } },
+              plugins: { legend: { display: false } }
+          }
+      });
+
+      // Metas EP: avance financiero del programa de inversiones
+      new Chart(document.getElementById('advanceChart').getContext('2d'), {
+          type: 'bar',
+          data: {
+              labels: ['Año 1', 'Año 2', 'Año 3', 'Año 4', 'Año 5'],
+              datasets: [{
+                  label: 'Avance financiero (%)',
+                  data: [12, 27, 45, 68, 100],
+                  backgroundColor: '#0891b2'
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: { y: { beginAtZero: true, max: 100, ticks: { callback: (v) => v + '%' } } },
+              plugins: { legend: { display: false } }
+          }
+      });
+
+      // Reserva PCC: Año 3 a Año 5
+      new Chart(document.getElementById('pccChart').getContext('2d'), {
+          type: 'bar',
+          data: {
+              labels: ['Año 1', 'Año 2', 'Año 3', 'Año 4', 'Año 5'],
+              datasets: [{
+                  label: 'Ejecución PCC (%)',
+                  data: [20, 40, 60, 80, 100],
+                  backgroundColor: '#0891b2'
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: { y: { beginAtZero: true, max: 100, ticks: { callback: (v) => v + '%' } } },
+              plugins: { legend: { display: false } }
+          }
+      });
+
+      // Reserva MRSE
+      new Chart(document.getElementById('mrseChart').getContext('2d'), {
+          type: 'bar',
+          data: {
+              labels: ['Año 1', 'Año 2', 'Año 3', 'Año 4', 'Año 5'],
+              datasets: [{
+                  label: 'Ejecución MRSE (%)',
+                  data: [10, 31, 53, 76, 100],
+                  backgroundColor: '#0891b2'
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: { y: { beginAtZero: true, max: 100, ticks: { callback: (v) => v + '%' } } },
+              plugins: { legend: { display: false } }
+          }
+      });
+
+      // Reserva GRD
+      new Chart(document.getElementById('grdChart').getContext('2d'), {
+          type: 'bar',
+          data: {
+              labels: ['Año 1', 'Año 2', 'Año 3', 'Año 4', 'Año 5'],
+              datasets: [{
+                  label: 'Ejecución GRD (%)',
+                  data: [12, 12, 36, 36, 100],
+                  backgroundColor: '#0891b2'
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: { y: { beginAtZero: true, max: 100, ticks: { callback: (v) => v + '%' } } },
+              plugins: { legend: { display: false } }
+          }
+      });
+
+      const mobileMenuButton = document.getElementById('mobile-menu-button');
+      const mobileMenu = document.getElementById('mobile-menu');
+      mobileMenuButton.addEventListener('click', () => { mobileMenu.classList.toggle('hidden'); });
+  });
+
+  function scrollToSection(sectionId) {
+      document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+      const mobileMenu = document.getElementById('mobile-menu');
+      if (!mobileMenu.classList.contains('hidden')) { mobileMenu.classList.add('hidden'); }
+  }
+</script>
