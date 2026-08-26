@@ -157,6 +157,42 @@ folders.forEach(folder => {
     }
     indexHtml = cardBlocks.join('<div class="glass-card');
   }
+
+  // D. Actualizar URLs compartidas de SharePoint para Audio, PDF y Logo
+  if (info.audio_url || info.pdf_url || info.logo_url) {
+    const cardBlocks = indexHtml.split('<div class="glass-card');
+    for (let i = 1; i < cardBlocks.length; i++) {
+      const normCard = normalize(cardBlocks[i].substring(0, 1200));
+      if (normCard.includes(cleanEpsName) || (info.key && normCard.includes(normalize(info.key)))) {
+        let updatedCard = cardBlocks[i];
+        
+        if (info.audio_url) {
+          updatedCard = updatedCard.replace(
+            /(onclick=["'](?:event\.stopPropagation\(\);\s*)?playAudio\(['"])([^'"]+)(['"])/i,
+            `$1${info.audio_url}$3`
+          );
+        }
+        
+        if (info.pdf_url) {
+          updatedCard = updatedCard.replace(
+            /(<a[^>]*href=["'])([^'"]+)(["'][^>]*onclick=["'](?:event\.stopPropagation\(\);\s*)?trackDownload)/i,
+            `$1${info.pdf_url}$3`
+          );
+        }
+        
+        if (info.logo_url) {
+          updatedCard = updatedCard.replace(
+            /(<img[^>]*src=["'])([^'"]+)(["'][^>]*alt=)/i,
+            `$1${info.logo_url}$3`
+          );
+        }
+
+        cardBlocks[i] = updatedCard;
+        break;
+      }
+    }
+    indexHtml = cardBlocks.join('<div class="glass-card');
+  }
 });
 
 // Guardar index.html actualizado en dist/ y en la raíz
