@@ -44,16 +44,14 @@ if (!rawContent) {
   process.exit(0);
 }
 
-// Resolver contenido (si es base64 o texto directo o JSON)
+// Resolver contenido
 let fileBuffer = null;
 let contentString = '';
 
 if (typeof rawContent === 'string') {
-  // Intentar decodificar como base64
   try {
     const decoded = Buffer.from(rawContent, 'base64');
     const str = decoded.toString('utf8');
-    // Si contiene caracteres legibles o es JSON
     if (str.includes('{') || str.includes('<!DOCTYPE') || str.includes('<html')) {
       fileBuffer = decoded;
       contentString = str;
@@ -65,7 +63,6 @@ if (typeof rawContent === 'string') {
     contentString = rawContent;
   }
 } else if (typeof rawContent === 'object') {
-  // Si vino como objeto JSON directo
   contentString = JSON.stringify(rawContent, null, 2);
   fileBuffer = Buffer.from(contentString, 'utf8');
 }
@@ -87,13 +84,13 @@ function normalize(str) {
 
 let targetFolder = '';
 
-// Estrategia 1: Si es un JSON, leer el campo "nombre" de la EPS directamente del archivo!
+// Estrategia 1: Si es un JSON, leer el nombre de la EPS del JSON
 if (contentString && (contentString.trim().startsWith('{') || contentString.includes('"nombre"'))) {
   try {
     const parsedJson = JSON.parse(contentString);
     const epsNameInJson = parsedJson.nombre || '';
     if (epsNameInJson) {
-      console.log('EPS identificada directamente desde el contenido del JSON:', epsNameInJson);
+      console.log('EPS identificada en JSON:', epsNameInJson);
       const normName = normalize(epsNameInJson);
       for (const folder of epsFolders) {
         const normFolder = normalize(folder);
@@ -104,7 +101,7 @@ if (contentString && (contentString.trim().startsWith('{') || contentString.incl
       }
     }
   } catch (e) {
-    console.log('El contenido no es JSON parseable, intentando por nombre de ruta.');
+    console.log('Contenido JSON no parseable.');
   }
 }
 
@@ -120,7 +117,7 @@ if (!targetFolder && rawFilePath) {
   }
 }
 
-// Estrategia 3: Buscar coincidencias por palabras clave en la ruta
+// Estrategia 3: Buscar coincidencias en partes de la ruta
 if (!targetFolder && rawFilePath) {
   const parts = rawFilePath.split(/[\\/]/).filter(p => p.trim() !== '');
   for (const part of parts) {
@@ -148,9 +145,42 @@ if (!fileName || typeof fileName !== 'string' || !fileName.includes('.')) {
 }
 
 if (targetFolder) {
-  const destPath = path.join(epsDir, targetFolder, fileName);
-  fs.writeFileSync(destPath, fileBuffer);
-  console.log(`🎉 ¡ÉXITO! Archivo guardado en: eps/${targetFolder}/${fileName} (${fileBuffer.length} bytes)`);
+  const targetDir = path.join(epsDir, targetFolder);
+  const destPath = path.join(targetDir, fileName);
+
+  // Si es info.json, hacer MERGE inteligente para preservar las URLs y claves
+  if (fileName === 'info.json' && contentString) {
+    try {
+      const incomingJson = JSON.parse(contentString);
+      let existingJson = {};
+      if (fs.existsSync(destPath)) {
+        try { existingJson = JSON.parse(fs.readFileSync(destPath, 'utf8')); } catch(e) {}
+      }
+      
+      const mergedJson = {
+        key: existingJson.key || targetFolder.toLowerCase().replace(/[^a-z0-9]/g, ''),
+        slug: existingJson.slug || targetFolder,
+        nombre: incomingJson.nombre || existingJson.nombre || targetFolder,
+        region: incomingJson.region || existingJson.region || '',
+        macroregion: incomingJson.macroregion || existingJson.macroregion || '',
+        periodo: incomingJson.periodo || existingJson.periodo || '',
+        resumen: incomingJson.resumen || existingJson.resumen || '',
+        html_archivo: existingJson.html_archivo || `${targetFolder}.html`,
+        audio_url: incomingJson.audio_url || existingJson.audio_url || '',
+        pdf_url: incomingJson.pdf_url || existingJson.pdf_url || '',
+        logo_url: incomingJson.logo_url || existingJson.logo_url || ''
+      };
+
+      fs.writeFileSync(destPath, JSON.stringify(mergedJson, null, 2), 'utf8');
+      console.log(`🎉 ¡ÉXITO! info.json fusionado y guardado en: eps/${targetFolder}/info.json`);
+    } catch (e) {
+      fs.writeFileSync(destPath, fileBuffer);
+      console.log(`Archivo guardado directamente en: eps/${targetFolder}/${fileName}`);
+    }
+  } else {
+    fs.writeFileSync(destPath, fileBuffer);
+    console.log(`🎉 ¡ÉXITO! Archivo guardado en: eps/${targetFolder}/${fileName} (${fileBuffer.length} bytes)`);
+  }
 } else {
   console.log('⚠️ No se pudo determinar la EPS destino. Recompilando catálogo general...');
 }
