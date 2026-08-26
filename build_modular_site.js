@@ -115,6 +115,14 @@ folders.forEach(folder => {
     fs.writeFileSync(path.join(__dirname, htmlFile), finalHtml, 'utf-8');
   });
 
+  // A2. Copiar imágenes y logos de la EPS
+  const mediaFiles = fs.readdirSync(folderPath).filter(f => /\.(png|jpe?g|webp|svg|gif|ico)$/i.test(f));
+  mediaFiles.forEach(mediaFile => {
+    const srcMedia = path.join(folderPath, mediaFile);
+    fs.copyFileSync(srcMedia, path.join(DIST_DIR, mediaFile));
+    fs.copyFileSync(srcMedia, path.join(__dirname, mediaFile));
+  });
+
   // B. Actualizar Resumen en la tarjeta correspondiente de index.html
   if (info.resumen && info.resumen.trim() !== '') {
     const cardBlocks = indexHtml.split('<div class="glass-card');
