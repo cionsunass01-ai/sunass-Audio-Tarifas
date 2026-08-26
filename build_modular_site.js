@@ -158,7 +158,7 @@ folders.forEach(folder => {
     indexHtml = cardBlocks.join('<div class="glass-card');
   }
 
-  // D. Actualizar URLs compartidas de SharePoint para Audio, PDF y Logo
+  // D. Actualizar URLs compartidas de SharePoint para Audio, PDF y Logo si vienen en info.json
   if (info.audio_url || info.pdf_url || info.logo_url) {
     const cardBlocks = indexHtml.split('<div class="glass-card');
     for (let i = 1; i < cardBlocks.length; i++) {
@@ -187,6 +187,68 @@ folders.forEach(folder => {
           );
         }
 
+        cardBlocks[i] = updatedCard;
+        break;
+      }
+    }
+    indexHtml = cardBlocks.join('<div class="glass-card');
+  }
+
+  // D2. Si se subió un nuevo logo/imagen local a la carpeta de la EPS, usar automáticamente ese archivo local
+  if (mediaFiles.length > 0) {
+    // Tomar la imagen más reciente o principal
+    const latestLogo = mediaFiles[mediaFiles.length - 1];
+    const cardBlocks = indexHtml.split('<div class="glass-card');
+    for (let i = 1; i < cardBlocks.length; i++) {
+      const normCard = normalize(cardBlocks[i].substring(0, 1200));
+      if (normCard.includes(cleanEpsName) || (info.key && normCard.includes(normalize(info.key)))) {
+        let updatedCard = cardBlocks[i];
+        
+        updatedCard = updatedCard.replace(
+          /(<img[^>]*src=["'])([^'"]+)(["'][^>]*alt=)/i,
+          `$1./${latestLogo}$3`
+        );
+        
+        cardBlocks[i] = updatedCard;
+        break;
+      }
+    }
+    indexHtml = cardBlocks.join('<div class="glass-card');
+  }
+
+  // D3. Si se subió un archivo de audio local (.m4a, .mp3, .wav)
+  const audioFiles = fs.readdirSync(folderPath).filter(f => /\.(m4a|mp3|wav|ogg)$/i.test(f));
+  if (audioFiles.length > 0) {
+    const latestAudio = audioFiles[audioFiles.length - 1];
+    const cardBlocks = indexHtml.split('<div class="glass-card');
+    for (let i = 1; i < cardBlocks.length; i++) {
+      const normCard = normalize(cardBlocks[i].substring(0, 1200));
+      if (normCard.includes(cleanEpsName) || (info.key && normCard.includes(normalize(info.key)))) {
+        let updatedCard = cardBlocks[i];
+        updatedCard = updatedCard.replace(
+          /(onclick=["'](?:event\.stopPropagation\(\);\s*)?playAudio\(['"])([^'"]+)(['"])/i,
+          `$1./${latestAudio}$3`
+        );
+        cardBlocks[i] = updatedCard;
+        break;
+      }
+    }
+    indexHtml = cardBlocks.join('<div class="glass-card');
+  }
+
+  // D4. Si se subió un archivo PDF local (.pdf)
+  const pdfFiles = fs.readdirSync(folderPath).filter(f => /\.pdf$/i.test(f));
+  if (pdfFiles.length > 0) {
+    const latestPdf = pdfFiles[pdfFiles.length - 1];
+    const cardBlocks = indexHtml.split('<div class="glass-card');
+    for (let i = 1; i < cardBlocks.length; i++) {
+      const normCard = normalize(cardBlocks[i].substring(0, 1200));
+      if (normCard.includes(cleanEpsName) || (info.key && normCard.includes(normalize(info.key)))) {
+        let updatedCard = cardBlocks[i];
+        updatedCard = updatedCard.replace(
+          /(<a[^>]*href=["'])([^'"]+)(["'][^>]*onclick=["'](?:event\.stopPropagation\(\);\s*)?trackDownload)/i,
+          `$1./${latestPdf}$3`
+        );
         cardBlocks[i] = updatedCard;
         break;
       }
