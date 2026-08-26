@@ -3,66 +3,79 @@ const path = require('path');
 
 console.log('=== PROCESANDO ARCHIVO DESDE SHAREPOINT / ONEDRIVE ===');
 
-// Leer el archivo de evento completo de GitHub Actions si existe
+// 1. Leer el archivo de evento completo de GitHub Actions
 let clientPayload = {};
 const eventPath = process.env.GITHUB_EVENT_PATH;
 if (eventPath && fs.existsSync(eventPath)) {
   try {
     const eventData = JSON.parse(fs.readFileSync(eventPath, 'utf8'));
     clientPayload = eventData.client_payload || {};
-    console.log('Evento de GitHub cargado correctamente.');
+    console.log('Evento de GitHub cargado. Payload keys:', Object.keys(clientPayload));
   } catch (e) {
-    console.log('No se pudo leer GITHUB_EVENT_PATH:', e.message);
+    console.log('Error al leer GITHUB_EVENT_PATH:', e.message);
   }
 }
 
-// Extraer campos con soporte para múltiples formatos de Power Automate
-let rawFilePath = clientPayload.file_path || process.env.FILE_PATH || '';
-let fileName = clientPayload.file_name || process.env.FILE_NAME || '';
-let base64Content = clientPayload.file_content || process.env.FILE_CONTENT_BASE64 || '';
-
-// Si los objetos vienen anidados desde Power Automate
-if (typeof rawFilePath === 'object' && rawFilePath !== null) {
-  rawFilePath = rawFilePath.Path || rawFilePath['{FullPath}'] || rawFilePath.path || '';
-}
-if (typeof fileName === 'object' && fileName !== null) {
-  fileName = fileName.Name || fileName['{FilenameWithExtension}'] || fileName.name || '';
-}
-if (typeof base64Content === 'object' && base64Content !== null) {
-  base64Content = base64Content['$content'] || base64Content.content || '';
-}
-
-// Si el nombre del archivo está vacío pero está en la ruta
-if (!fileName && rawFilePath) {
-  const parts = rawFilePath.split(/[\\/]/).filter(p => p.trim() !== '');
-  if (parts.length > 0 && parts[parts.length - 1].includes('.')) {
-    fileName = parts[parts.length - 1];
+// Función auxiliar para buscar valores recursivamente en objetos de Power Automate
+function findValue(obj, keys) {
+  if (!obj || typeof obj !== 'object') return null;
+  for (const k of Object.keys(obj)) {
+    if (keys.some(searchKey => k.toLowerCase().includes(searchKey.toLowerCase()))) {
+      if (typeof obj[k] === 'string' && obj[k].trim() !== '') return obj[k];
+    }
+    if (typeof obj[k] === 'object') {
+      const nested = findValue(obj[k], keys);
+      if (nested) return nested;
+    }
   }
+  return null;
 }
 
-// Por defecto, si aún está vacío
-if (!fileName) {
-  fileName = 'info.json';
-}
+// Extraer Path, Name y Content
+let rawFilePath = findValue(clientPayload, ['Path', '{FullPath}', 'path', 'filepath']) || process.env.FILE_PATH || '';
+let fileName = findValue(clientPayload, ['Name', '{FilenameWithExtension}', 'filename', 'name']) || process.env.FILE_NAME || '';
+let rawContent = clientPayload.file_content || findValue(clientPayload, ['$content', 'content', 'file_content']) || process.env.FILE_CONTENT_BASE64 || '';
 
-console.log('Ruta OneDrive:', rawFilePath);
-console.log('Nombre Archivo:', fileName);
+console.log('Ruta detectada:', rawFilePath);
+console.log('Nombre de archivo detectado:', fileName);
 
-if (!base64Content) {
-  console.log('⚠️ No se recibió contenido base64 para escribir. Recompilando portal existente...');
+if (!rawContent) {
+  console.log('⚠️ No se encontró contenido en el payload. Recompilando catálogo existente...');
   process.exit(0);
 }
 
-// Decodificar el contenido
-let fileBuffer;
-try {
-  fileBuffer = Buffer.from(base64Content, 'base64');
-} catch (e) {
-  console.error('Error al decodificar base64:', e.message);
+// Resolver contenido (si es base64 o texto directo o JSON)
+let fileBuffer = null;
+let contentString = '';
+
+if (typeof rawContent === 'string') {
+  // Intentar decodificar como base64
+  try {
+    const decoded = Buffer.from(rawContent, 'base64');
+    const str = decoded.toString('utf8');
+    // Si contiene caracteres legibles o es JSON
+    if (str.includes('{') || str.includes('<!DOCTYPE') || str.includes('<html')) {
+      fileBuffer = decoded;
+      contentString = str;
+    } else {
+      fileBuffer = decoded;
+    }
+  } catch (e) {
+    fileBuffer = Buffer.from(rawContent, 'utf8');
+    contentString = rawContent;
+  }
+} else if (typeof rawContent === 'object') {
+  // Si vino como objeto JSON directo
+  contentString = JSON.stringify(rawContent, null, 2);
+  fileBuffer = Buffer.from(contentString, 'utf8');
+}
+
+if (!fileBuffer) {
+  console.log('⚠️ No se pudo procesar el buffer del archivo.');
   process.exit(0);
 }
 
-// Mapeo de carpetas de OneDrive a las carpetas en eps/
+// Mapeo de carpetas de EPS
 const epsDir = path.join(__dirname, 'eps');
 const epsFolders = fs.readdirSync(epsDir).filter(f => fs.statSync(path.join(epsDir, f)).isDirectory());
 
@@ -72,67 +85,72 @@ function normalize(str) {
     .replace(/[^a-z0-9]/g, '');
 }
 
-// Extraer el nombre de la carpeta de la EPS de la ruta
-let oneDriveFolderName = '';
-const parts = (rawFilePath || '').split(/[\\/]/).filter(p => p.trim() !== '');
-if (parts.length >= 2) {
-  // Si el último elemento es el archivo, la carpeta es el penúltimo
-  if (parts[parts.length - 1].includes('.')) {
-    oneDriveFolderName = parts[parts.length - 2];
-  } else {
-    oneDriveFolderName = parts[parts.length - 1];
+let targetFolder = '';
+
+// Estrategia 1: Si es un JSON, leer el campo "nombre" de la EPS directamente del archivo!
+if (contentString && (contentString.trim().startsWith('{') || contentString.includes('"nombre"'))) {
+  try {
+    const parsedJson = JSON.parse(contentString);
+    const epsNameInJson = parsedJson.nombre || '';
+    if (epsNameInJson) {
+      console.log('EPS identificada directamente desde el contenido del JSON:', epsNameInJson);
+      const normName = normalize(epsNameInJson);
+      for (const folder of epsFolders) {
+        const normFolder = normalize(folder);
+        if (normName.includes(normFolder) || normFolder.includes(normName)) {
+          targetFolder = folder;
+          break;
+        }
+      }
+    }
+  } catch (e) {
+    console.log('El contenido no es JSON parseable, intentando por nombre de ruta.');
   }
 }
 
-console.log('Carpeta detectada en OneDrive:', oneDriveFolderName);
-
-// Buscar la carpeta correspondiente en eps/
-let targetFolder = '';
-const normOneDrive = normalize(oneDriveFolderName);
-
-if (normOneDrive) {
+// Estrategia 2: Por ruta de OneDrive
+if (!targetFolder && rawFilePath) {
+  const normPath = normalize(rawFilePath);
   for (const folder of epsFolders) {
     const normFolder = normalize(folder);
-    if (normOneDrive.includes(normFolder) || normFolder.includes(normOneDrive)) {
+    if (normPath.includes(normFolder)) {
       targetFolder = folder;
       break;
     }
   }
+}
 
-  if (!targetFolder) {
-    const cleanOneDrive = oneDriveFolderName.replace(/^[0-9]+\.\s*/, '');
+// Estrategia 3: Buscar coincidencias por palabras clave en la ruta
+if (!targetFolder && rawFilePath) {
+  const parts = rawFilePath.split(/[\\/]/).filter(p => p.trim() !== '');
+  for (const part of parts) {
+    const cleanPart = normalize(part.replace(/^[0-9]+\.\s*/, ''));
     for (const folder of epsFolders) {
-      if (normalize(cleanOneDrive).includes(normalize(folder)) || normalize(folder).includes(normalize(cleanOneDrive))) {
+      const normFolder = normalize(folder);
+      if (cleanPart && (cleanPart.includes(normFolder) || normFolder.includes(cleanPart))) {
         targetFolder = folder;
         break;
       }
     }
+    if (targetFolder) break;
   }
 }
 
-// Si aún no se encuentra pero hay mención en fileName o ruta
-if (!targetFolder && rawFilePath) {
-  for (const folder of epsFolders) {
-    if (normalize(rawFilePath).includes(normalize(folder))) {
-      targetFolder = folder;
-      break;
-    }
-  }
-}
-
-// Fallback: si no se detectó EPS específica, buscar en las 50
-if (targetFolder) {
-  const targetDir = path.join(epsDir, targetFolder);
-  const destPath = path.join(targetDir, fileName);
-
-  // Asegurar que destPath sea un archivo y no un directorio
-  if (fs.existsSync(destPath) && fs.statSync(destPath).isDirectory()) {
-    console.error('Destino es un directorio, asignando nombre de archivo por defecto.');
-    fs.writeFileSync(path.join(destPath, 'info.json'), fileBuffer);
+// Determinar nombre de archivo final
+if (!fileName || typeof fileName !== 'string' || !fileName.includes('.')) {
+  if (contentString && contentString.trim().startsWith('{')) {
+    fileName = 'info.json';
+  } else if (contentString && contentString.includes('<html')) {
+    fileName = `${targetFolder || 'index'}.html`;
   } else {
-    fs.writeFileSync(destPath, fileBuffer);
-    console.log(`✅ Archivo guardado con éxito en: eps/${targetFolder}/${fileName} (${fileBuffer.length} bytes)`);
+    fileName = 'info.json';
   }
+}
+
+if (targetFolder) {
+  const destPath = path.join(epsDir, targetFolder, fileName);
+  fs.writeFileSync(destPath, fileBuffer);
+  console.log(`🎉 ¡ÉXITO! Archivo guardado en: eps/${targetFolder}/${fileName} (${fileBuffer.length} bytes)`);
 } else {
-  console.log(`⚠️ No se pudo asociar la carpeta "${oneDriveFolderName}" a una EPS local. Continuando compilación...`);
+  console.log('⚠️ No se pudo determinar la EPS destino. Recompilando catálogo general...');
 }

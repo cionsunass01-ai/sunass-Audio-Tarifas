@@ -10,10 +10,9 @@ const DIST_DIR = path.join(ROOT_DIR, 'dist');
 const POWER_AUTOMATE_WEBHOOK_URL = 'https://59f2ef142203ee179f91e2d52042e9.ee.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/07/workflows/ff0a34f125c1400ead780579c4cab397/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=fJAVS__AjllVGQBpcGvrg4ZEdU5x9y0l6u3b1d8jQHQ';
 
 // Ensure dist directory exists
-if (fs.existsSync(DIST_DIR)) {
-  fs.rmSync(DIST_DIR, { recursive: true, force: true });
+if (!fs.existsSync(DIST_DIR)) {
+  fs.mkdirSync(DIST_DIR, { recursive: true });
 }
-fs.mkdirSync(DIST_DIR, { recursive: true });
 
 console.log('🚀 Compilando versión estática conectada al Webhook de Power Automate / Dataverse...');
 
