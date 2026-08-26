@@ -93,6 +93,20 @@ function wrapHtmlIfFragment(title, content) {
 </html>`;
 }
 
+function cardMatchesEps(cardContent, info, folder) {
+  const normTitle = normalize(info.nombre || folder);
+  const key = (info.key || folder).toLowerCase().replace(/[^a-z0-9]/g, '');
+  const normCard = normalize(cardContent.substring(0, 1500));
+  
+  if (normCard.includes(`summary-${key}`) || normCard.includes(`downloads-${key}`) || normCard.includes(`duration-${key}`)) {
+    return true;
+  }
+  if (normCard.includes(normTitle)) {
+    return true;
+  }
+  return false;
+}
+
 folders.forEach(folder => {
   const folderPath = path.join(EPS_DIR, folder);
   const infoPath = path.join(folderPath, 'info.json');
@@ -101,7 +115,6 @@ folders.forEach(folder => {
     try { info = JSON.parse(fs.readFileSync(infoPath, 'utf-8')); } catch(e) {}
   }
   const epsName = info.nombre || folder;
-  const cleanEpsName = normalize(epsName);
 
   // A. Copiar y publicar archivos HTML individuales de la EPS
   const htmlFiles = fs.readdirSync(folderPath).filter(f => f.endsWith('.html'));
@@ -110,7 +123,6 @@ folders.forEach(folder => {
     let rawContent = fs.readFileSync(srcHtml, 'utf-8');
     const finalHtml = wrapHtmlIfFragment(epsName, rawContent);
     
-    // Guardar en dist/ y en la raíz del repositorio
     fs.writeFileSync(path.join(DIST_DIR, htmlFile), finalHtml, 'utf-8');
     fs.writeFileSync(path.join(__dirname, htmlFile), finalHtml, 'utf-8');
   });
@@ -127,10 +139,8 @@ folders.forEach(folder => {
   if (info.resumen && info.resumen.trim() !== '') {
     const cardBlocks = indexHtml.split('<div class="glass-card');
     for (let i = 1; i < cardBlocks.length; i++) {
-      const cardContent = cardBlocks[i];
-      const normCard = normalize(cardContent.substring(0, 1200));
-      if (normCard.includes(cleanEpsName) || (info.key && normCard.includes(normalize(info.key)))) {
-        const updatedCard = cardContent.replace(
+      if (cardMatchesEps(cardBlocks[i], info, folder)) {
+        const updatedCard = cardBlocks[i].replace(
           /(<div[^>]*id=["']summary-[^"']*["'][^>]*>)([\s\S]*?)(<\/div>)/i,
           `$1\n          ${info.resumen.trim()}\n        $3`
         );
@@ -145,8 +155,7 @@ folders.forEach(folder => {
   if (info.periodo && info.periodo.trim() !== '') {
     const cardBlocks = indexHtml.split('<div class="glass-card');
     for (let i = 1; i < cardBlocks.length; i++) {
-      const normCard = normalize(cardBlocks[i].substring(0, 1200));
-      if (normCard.includes(cleanEpsName)) {
+      if (cardMatchesEps(cardBlocks[i], info, folder)) {
         const updatedCard = cardBlocks[i].replace(
           /(<span[^>]*><svg[^>]*><\/svg>)Periodo[^<]*(<\/span>)/i,
           `$1Periodo ${info.periodo.replace(/Periodo\s*/i, '').trim()}$2`
@@ -162,8 +171,7 @@ folders.forEach(folder => {
   if (info.audio_url || info.pdf_url || info.logo_url) {
     const cardBlocks = indexHtml.split('<div class="glass-card');
     for (let i = 1; i < cardBlocks.length; i++) {
-      const normCard = normalize(cardBlocks[i].substring(0, 1200));
-      if (normCard.includes(cleanEpsName) || (info.key && normCard.includes(normalize(info.key)))) {
+      if (cardMatchesEps(cardBlocks[i], info, folder)) {
         let updatedCard = cardBlocks[i];
         
         if (info.audio_url) {
@@ -193,68 +201,6 @@ folders.forEach(folder => {
     }
     indexHtml = cardBlocks.join('<div class="glass-card');
   }
-
-  // D2. Si se subió un nuevo logo/imagen local a la carpeta de la EPS, usar automáticamente ese archivo local
-  if (mediaFiles.length > 0) {
-    // Tomar la imagen más reciente o principal
-    const latestLogo = mediaFiles[mediaFiles.length - 1];
-    const cardBlocks = indexHtml.split('<div class="glass-card');
-    for (let i = 1; i < cardBlocks.length; i++) {
-      const normCard = normalize(cardBlocks[i].substring(0, 1200));
-      if (normCard.includes(cleanEpsName) || (info.key && normCard.includes(normalize(info.key)))) {
-        let updatedCard = cardBlocks[i];
-        
-        updatedCard = updatedCard.replace(
-          /(<img[^>]*src=["'])([^'"]+)(["'][^>]*alt=)/i,
-          `$1./${latestLogo}$3`
-        );
-        
-        cardBlocks[i] = updatedCard;
-        break;
-      }
-    }
-    indexHtml = cardBlocks.join('<div class="glass-card');
-  }
-
-  // D3. Si se subió un archivo de audio local (.m4a, .mp3, .wav)
-  const audioFiles = fs.readdirSync(folderPath).filter(f => /\.(m4a|mp3|wav|ogg)$/i.test(f));
-  if (audioFiles.length > 0) {
-    const latestAudio = audioFiles[audioFiles.length - 1];
-    const cardBlocks = indexHtml.split('<div class="glass-card');
-    for (let i = 1; i < cardBlocks.length; i++) {
-      const normCard = normalize(cardBlocks[i].substring(0, 1200));
-      if (normCard.includes(cleanEpsName) || (info.key && normCard.includes(normalize(info.key)))) {
-        let updatedCard = cardBlocks[i];
-        updatedCard = updatedCard.replace(
-          /(onclick=["'](?:event\.stopPropagation\(\);\s*)?playAudio\(['"])([^'"]+)(['"])/i,
-          `$1./${latestAudio}$3`
-        );
-        cardBlocks[i] = updatedCard;
-        break;
-      }
-    }
-    indexHtml = cardBlocks.join('<div class="glass-card');
-  }
-
-  // D4. Si se subió un archivo PDF local (.pdf)
-  const pdfFiles = fs.readdirSync(folderPath).filter(f => /\.pdf$/i.test(f));
-  if (pdfFiles.length > 0) {
-    const latestPdf = pdfFiles[pdfFiles.length - 1];
-    const cardBlocks = indexHtml.split('<div class="glass-card');
-    for (let i = 1; i < cardBlocks.length; i++) {
-      const normCard = normalize(cardBlocks[i].substring(0, 1200));
-      if (normCard.includes(cleanEpsName) || (info.key && normCard.includes(normalize(info.key)))) {
-        let updatedCard = cardBlocks[i];
-        updatedCard = updatedCard.replace(
-          /(<a[^>]*href=["'])([^'"]+)(["'][^>]*onclick=["'](?:event\.stopPropagation\(\);\s*)?trackDownload)/i,
-          `$1./${latestPdf}$3`
-        );
-        cardBlocks[i] = updatedCard;
-        break;
-      }
-    }
-    indexHtml = cardBlocks.join('<div class="glass-card');
-  }
 });
 
 // Guardar index.html actualizado en dist/ y en la raíz
@@ -262,4 +208,4 @@ fs.writeFileSync(indexHtmlPath, indexHtml, 'utf-8');
 const rootIndexPath = path.join(__dirname, 'index.html');
 fs.writeFileSync(rootIndexPath, indexHtml, 'utf-8');
 
-console.log('✅ Inyección modular y sincronización de HTMLs completada.');
+console.log('✅ Inyección modular y sincronización de tarjetas completada.');

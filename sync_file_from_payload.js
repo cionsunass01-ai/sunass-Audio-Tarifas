@@ -10,7 +10,7 @@ if (eventPath && fs.existsSync(eventPath)) {
   try {
     const eventData = JSON.parse(fs.readFileSync(eventPath, 'utf8'));
     clientPayload = eventData.client_payload || {};
-    console.log('Evento de GitHub cargado.');
+    console.log('Evento de GitHub cargado con éxito.');
   } catch (e) {
     console.log('Error al leer GITHUB_EVENT_PATH:', e.message);
   }
@@ -45,46 +45,63 @@ console.log('🔗 URL compartida de SharePoint:', fileUrl);
 const epsDir = path.join(__dirname, 'eps');
 const epsFolders = fs.readdirSync(epsDir).filter(f => fs.statSync(path.join(epsDir, f)).isDirectory());
 
-function normalize(str) {
+function cleanName(str) {
   return (str || '').toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]/g, '');
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Quitar tildes
+    .replace(/^[0-9]+\.\s*/, '')                     // Quitar números iniciales ("24. ")
+    .replace(/\b(s\.?a\.?|e\.?p\.?s\.?|empresa)\b/gi, '') // Quitar siglas comunes
+    .replace(/[^a-z0-9]/g, '');                      // Solo letras y números
 }
 
+// Extraer la carpeta específica de la EPS desde la ruta de OneDrive
 let targetFolder = '';
+const pathSegments = (rawFilePath || '').split(/[\\/]/).filter(p => p.trim() !== '');
 
-// Buscar carpeta EPS por ruta
-if (rawFilePath) {
-  const normPath = normalize(rawFilePath);
+// Si la ruta contiene al menos un archivo y una carpeta padre
+if (pathSegments.length >= 2) {
+  const folderSegment = pathSegments[pathSegments.length - 2]; // El segmento inmediatamente anterior al archivo
+  const cleanSegment = cleanName(folderSegment);
+  console.log(`Segmento de carpeta extraído: "${folderSegment}" (limpio: "${cleanSegment}")`);
+
+  // Buscar coincidencia exacta o más larga
+  let bestMatch = '';
+  let maxScore = 0;
+
   for (const folder of epsFolders) {
-    const normFolder = normalize(folder);
-    if (normPath.includes(normFolder) || normFolder.includes(normPath)) {
+    const cleanFolder = cleanName(folder);
+    if (cleanSegment === cleanFolder) {
+      bestMatch = folder;
+      break;
+    }
+    if (cleanSegment.includes(cleanFolder) || cleanFolder.includes(cleanSegment)) {
+      const matchLen = Math.min(cleanSegment.length, cleanFolder.length);
+      if (matchLen > maxScore && matchLen >= 3) {
+        maxScore = matchLen;
+        bestMatch = folder;
+      }
+    }
+  }
+  targetFolder = bestMatch;
+}
+
+// Fallback por nombre de archivo si el nombre del archivo contiene la EPS
+if (!targetFolder && fileName) {
+  const cleanFile = cleanName(fileName);
+  for (const folder of epsFolders) {
+    const cleanFolder = cleanName(folder);
+    if (cleanFolder.length >= 4 && cleanFile.includes(cleanFolder)) {
       targetFolder = folder;
       break;
     }
   }
 }
 
-// Buscar carpeta EPS por partes de la ruta
-if (!targetFolder && rawFilePath) {
-  const parts = rawFilePath.split(/[\\/]/).filter(p => p.trim() !== '');
-  for (const part of parts) {
-    const cleanPart = normalize(part.replace(/^[0-9]+\.\s*/, ''));
-    for (const folder of epsFolders) {
-      const normFolder = normalize(folder);
-      if (cleanPart && (cleanPart.includes(normFolder) || normFolder.includes(cleanPart))) {
-        targetFolder = folder;
-        break;
-      }
-    }
-    if (targetFolder) break;
-  }
-}
-
 if (!targetFolder) {
-  console.log('⚠️ No se pudo asociar la ruta a una carpeta de EPS local.');
+  console.log('⚠️ No se pudo asociar la ruta a una carpeta de EPS local con precisión.');
   process.exit(0);
 }
+
+console.log(`🎯 EPS identificada con precisión: "${targetFolder}"`);
 
 const targetDir = path.join(epsDir, targetFolder);
 const infoJsonPath = path.join(targetDir, 'info.json');
@@ -105,21 +122,20 @@ const isJson = /\.json$/i.test(fileName || rawFilePath);
 
 // CASO 1: Es un Logo / Imagen -> Actualizar logo_url con el link de SharePoint
 if (isImage && fileUrl) {
-  // Asegurar formato de descarga directa si es de SharePoint
   let finalImageUrl = fileUrl;
   if (!finalImageUrl.includes('&download=1') && !finalImageUrl.includes('?download=1')) {
     finalImageUrl += (finalImageUrl.includes('?') ? '&' : '?') + 'download=1';
   }
   existingJson.logo_url = finalImageUrl;
   fs.writeFileSync(infoJsonPath, JSON.stringify(existingJson, null, 2), 'utf8');
-  console.log(`🎉 ¡ÉXITO! Logo actualizado para ${targetFolder} con URL: ${finalImageUrl}`);
+  console.log(`🎉 ¡ÉXITO! Logo de ${targetFolder} actualizado con URL: ${finalImageUrl}`);
 }
 
 // CASO 2: Es un Audio -> Actualizar audio_url con el link de SharePoint
 else if (isAudio && fileUrl) {
   existingJson.audio_url = fileUrl;
   fs.writeFileSync(infoJsonPath, JSON.stringify(existingJson, null, 2), 'utf8');
-  console.log(`🎉 ¡ÉXITO! Audio actualizado para ${targetFolder} con URL: ${fileUrl}`);
+  console.log(`🎉 ¡ÉXITO! Audio de ${targetFolder} actualizado con URL: ${fileUrl}`);
 }
 
 // CASO 3: Es un PDF -> Actualizar pdf_url con el link de SharePoint
@@ -130,7 +146,7 @@ else if (isPdf && fileUrl) {
   }
   existingJson.pdf_url = finalPdfUrl;
   fs.writeFileSync(infoJsonPath, JSON.stringify(existingJson, null, 2), 'utf8');
-  console.log(`🎉 ¡ÉXITO! PDF oficial actualizado para ${targetFolder} con URL: ${finalPdfUrl}`);
+  console.log(`🎉 ¡ÉXITO! PDF de ${targetFolder} actualizado con URL: ${finalPdfUrl}`);
 }
 
 // CASO 4: Es info.json o HTML -> Procesar contenido
