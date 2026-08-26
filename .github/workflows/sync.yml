@@ -1,0 +1,40 @@
+name: Sincronizacion Automatica desde SharePoint
+
+on:
+  repository_dispatch:
+    types: [sharepoint_sync, update_estudios]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Recompilar Portal Modular
+        run: |
+          node build_modular_site.js
+          node copy_dist_to_root.js
+
+      - name: Confirmar y Publicar cambios en la rama main
+        run: |
+          git config --global user.name "CION Automation Bot"
+          git config --global user.email "cion_sunass@sunass.gob.pe"
+          git add index.html dist/ eps/
+          if git diff --staged --quiet; then
+            echo "No hay cambios pendientes en los archivos."
+          else
+            git commit -m "Auto-Sync: Actualizacion automatica del portal desde SharePoint"
+            git push origin main
+          fi
