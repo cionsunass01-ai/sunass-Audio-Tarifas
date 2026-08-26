@@ -10,7 +10,7 @@ if (eventPath && fs.existsSync(eventPath)) {
   try {
     const eventData = JSON.parse(fs.readFileSync(eventPath, 'utf8'));
     clientPayload = eventData.client_payload || {};
-    console.log('Evento de GitHub cargado. Payload keys:', Object.keys(clientPayload));
+    console.log('Evento de GitHub cargado.');
   } catch (e) {
     console.log('Error al leer GITHUB_EVENT_PATH:', e.message);
   }
@@ -36,7 +36,7 @@ let rawFilePath = findValue(clientPayload, ['Path', '{FullPath}', 'path', 'filep
 let fileName = findValue(clientPayload, ['Name', '{FilenameWithExtension}', 'filename', 'name']) || process.env.FILE_NAME || '';
 let rawContent = clientPayload.file_content || findValue(clientPayload, ['$content', 'content', 'file_content']) || process.env.FILE_CONTENT_BASE64 || '';
 
-console.log('Ruta detectada:', rawFilePath);
+console.log('Ruta detectada en OneDrive:', rawFilePath);
 console.log('Nombre de archivo detectado:', fileName);
 
 if (!rawContent) {
@@ -52,7 +52,7 @@ if (typeof rawContent === 'string') {
   try {
     const decoded = Buffer.from(rawContent, 'base64');
     const str = decoded.toString('utf8');
-    if (str.includes('{') || str.includes('<!DOCTYPE') || str.includes('<html')) {
+    if (str.includes('{') || str.includes('<') || str.includes('Ficha') || str.includes('DOCTYPE')) {
       fileBuffer = decoded;
       contentString = str;
     } else {
@@ -84,13 +84,24 @@ function normalize(str) {
 
 let targetFolder = '';
 
-// Estrategia 1: Si es un JSON, leer el nombre de la EPS del JSON
-if (contentString && (contentString.trim().startsWith('{') || contentString.includes('"nombre"'))) {
+// Estrategia 1: Por ruta de OneDrive
+if (rawFilePath) {
+  const normPath = normalize(rawFilePath);
+  for (const folder of epsFolders) {
+    const normFolder = normalize(folder);
+    if (normPath.includes(normFolder) || normFolder.includes(normPath)) {
+      targetFolder = folder;
+      break;
+    }
+  }
+}
+
+// Estrategia 2: Si es un JSON, leer el nombre de la EPS del JSON
+if (!targetFolder && contentString && (contentString.trim().startsWith('{') || contentString.includes('"nombre"'))) {
   try {
     const parsedJson = JSON.parse(contentString);
     const epsNameInJson = parsedJson.nombre || '';
     if (epsNameInJson) {
-      console.log('EPS identificada en JSON:', epsNameInJson);
       const normName = normalize(epsNameInJson);
       for (const folder of epsFolders) {
         const normFolder = normalize(folder);
@@ -100,21 +111,7 @@ if (contentString && (contentString.trim().startsWith('{') || contentString.incl
         }
       }
     }
-  } catch (e) {
-    console.log('Contenido JSON no parseable.');
-  }
-}
-
-// Estrategia 2: Por ruta de OneDrive
-if (!targetFolder && rawFilePath) {
-  const normPath = normalize(rawFilePath);
-  for (const folder of epsFolders) {
-    const normFolder = normalize(folder);
-    if (normPath.includes(normFolder)) {
-      targetFolder = folder;
-      break;
-    }
-  }
+  } catch (e) {}
 }
 
 // Estrategia 3: Buscar coincidencias en partes de la ruta
@@ -133,11 +130,32 @@ if (!targetFolder && rawFilePath) {
   }
 }
 
-// Determinar nombre de archivo final
+// Estrategia 4: Buscar mención de la EPS en el contenido HTML
+if (!targetFolder && contentString) {
+  for (const folder of epsFolders) {
+    const normFolder = normalize(folder);
+    if (normalize(contentString).includes(normFolder)) {
+      targetFolder = folder;
+      break;
+    }
+  }
+}
+
+console.log('Carpeta EPS identificada:', targetFolder);
+
+// Determinar extensión y tipo de archivo
+const isHtml = (fileName && fileName.toLowerCase().endsWith('.html')) ||
+               (rawFilePath && rawFilePath.toLowerCase().endsWith('.html')) ||
+               (contentString && /<[a-z][\s\S]*>/i.test(contentString) && !contentString.trim().startsWith('{'));
+
+const isJson = (fileName && fileName.toLowerCase().endsWith('.json')) ||
+               (rawFilePath && rawFilePath.toLowerCase().endsWith('.json')) ||
+               (contentString && contentString.trim().startsWith('{'));
+
 if (!fileName || typeof fileName !== 'string' || !fileName.includes('.')) {
-  if (contentString && contentString.trim().startsWith('{')) {
+  if (isJson) {
     fileName = 'info.json';
-  } else if (contentString && contentString.includes('<html')) {
+  } else if (isHtml) {
     fileName = `${targetFolder || 'index'}.html`;
   } else {
     fileName = 'info.json';
@@ -148,8 +166,8 @@ if (targetFolder) {
   const targetDir = path.join(epsDir, targetFolder);
   const destPath = path.join(targetDir, fileName);
 
-  // Si es info.json, hacer MERGE inteligente para preservar las URLs y claves
-  if (fileName === 'info.json' && contentString) {
+  // Si es info.json, fusionar datos
+  if (fileName === 'info.json' && isJson) {
     try {
       const incomingJson = JSON.parse(contentString);
       let existingJson = {};
@@ -175,11 +193,11 @@ if (targetFolder) {
       console.log(`🎉 ¡ÉXITO! info.json fusionado y guardado en: eps/${targetFolder}/info.json`);
     } catch (e) {
       fs.writeFileSync(destPath, fileBuffer);
-      console.log(`Archivo guardado directamente en: eps/${targetFolder}/${fileName}`);
     }
   } else {
+    // Si es HTML, imagen, audio u otro
     fs.writeFileSync(destPath, fileBuffer);
-    console.log(`🎉 ¡ÉXITO! Archivo guardado en: eps/${targetFolder}/${fileName} (${fileBuffer.length} bytes)`);
+    console.log(`🎉 ¡ÉXITO! Archivo ${fileName} guardado en: eps/${targetFolder}/${fileName} (${fileBuffer.length} bytes)`);
   }
 } else {
   console.log('⚠️ No se pudo determinar la EPS destino. Recompilando catálogo general...');
