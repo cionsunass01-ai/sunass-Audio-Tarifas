@@ -22,6 +22,14 @@ jobs:
         with:
           node-version: 18
 
+      - name: Guardar archivo modificado desde el Payload
+        env:
+          FILE_PATH: ${{ github.event.client_payload.file_path }}
+          FILE_NAME: ${{ github.event.client_payload.file_name }}
+          FILE_CONTENT_BASE64: ${{ github.event.client_payload.file_content }}
+        run: |
+          node sync_file_from_payload.js
+
       - name: Recompilar Portal Modular
         run: |
           node build_modular_site.js
@@ -31,10 +39,10 @@ jobs:
         run: |
           git config --global user.name "CION Automation Bot"
           git config --global user.email "cion_sunass@sunass.gob.pe"
-          git add index.html dist/ eps/
+          git add index.html dist/ eps/ *.html
           if git diff --staged --quiet; then
             echo "No hay cambios pendientes en los archivos."
           else
-            git commit -m "Auto-Sync: Actualizacion automatica del portal desde SharePoint"
+            git commit -m "Auto-Sync: Actualizacion automatica de archivo desde OneDrive (${{ github.event.client_payload.file_name }})"
             git push origin main
           fi
