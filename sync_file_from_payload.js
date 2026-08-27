@@ -33,13 +33,31 @@ function findValue(obj, keys) {
 }
 
 // Extraer campos del payload
-let rawFilePath = findValue(clientPayload, ['Path', '{FullPath}', 'path', 'filepath']) || process.env.FILE_PATH || '';
-let fileName = findValue(clientPayload, ['Name', '{FilenameWithExtension}', 'filename', 'name']) || process.env.FILE_NAME || '';
+let rawFilePath = findValue(clientPayload, ['Path', '{FullPath}', 'path', 'filepath', 'x-ms-file-path-encoded', 'x-ms-file-path']) || process.env.FILE_PATH || '';
+let fileName = findValue(clientPayload, ['Name', '{FilenameWithExtension}', 'filename', 'name', 'x-ms-file-name-encoded', 'x-ms-file-name']) || process.env.FILE_NAME || '';
 let fileUrl = findValue(clientPayload, ['file_url', 'WebUrl', 'webUrl', 'Link', '{Link}', 'share_url', 'url']) || '';
 let rawContent = clientPayload.file_content || findValue(clientPayload, ['$content', 'content', 'file_content']) || process.env.FILE_CONTENT_BASE64 || '';
 
-console.log('📁 Ruta en OneDrive:', rawFilePath);
-console.log('📄 Nombre de archivo:', fileName);
+// Si la ruta o nombre vienen en Base64 desde los headers de Power Automate, decodificarlos
+function maybeDecodeBase64(str) {
+  if (!str) return '';
+  // Si no contiene barras ni puntos pero parece base64
+  if (/^[A-Za-z0-9+/=]+$/.test(str) && !str.includes('/') && !str.includes('\\') && str.length > 8) {
+    try {
+      const decoded = Buffer.from(str, 'base64').toString('utf8');
+      if (decoded && (decoded.includes('/') || decoded.includes('.') || decoded.includes('Sunass'))) {
+        return decoded;
+      }
+    } catch (e) {}
+  }
+  return str;
+}
+
+rawFilePath = maybeDecodeBase64(rawFilePath);
+fileName = maybeDecodeBase64(fileName);
+
+console.log('📁 Ruta en OneDrive (Decodificada):', rawFilePath);
+console.log('📄 Nombre de archivo (Decodificado):', fileName);
 console.log('🔗 URL compartida de SharePoint detectada:', fileUrl);
 
 // Identificar carpetas de EPS
@@ -129,7 +147,7 @@ if (isImage) {
     fs.writeFileSync(infoJsonPath, JSON.stringify(existingJson, null, 2), 'utf8');
     console.log(`🎉 ¡ÉXITO! Logo de ${targetFolder} actualizado con URL: ${finalImageUrl}`);
   } else {
-    console.log(`⚠️ Se detectó imagen ${fileName}, pero file_url llegó vacía. Revisa Power Automate.`);
+    console.log(`⚠️ Se detectó imagen ${fileName}, pero file_url llegó vacía.`);
   }
 }
 
