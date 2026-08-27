@@ -10,7 +10,8 @@ if (eventPath && fs.existsSync(eventPath)) {
   try {
     const eventData = JSON.parse(fs.readFileSync(eventPath, 'utf8'));
     clientPayload = eventData.client_payload || {};
-    console.log('Evento de GitHub cargado con éxito.');
+    console.log('📦 Evento de GitHub cargado. Payload completo:');
+    console.log(JSON.stringify(clientPayload, null, 2));
   } catch (e) {
     console.log('Error al leer GITHUB_EVENT_PATH:', e.message);
   }
@@ -34,12 +35,12 @@ function findValue(obj, keys) {
 // Extraer campos del payload
 let rawFilePath = findValue(clientPayload, ['Path', '{FullPath}', 'path', 'filepath']) || process.env.FILE_PATH || '';
 let fileName = findValue(clientPayload, ['Name', '{FilenameWithExtension}', 'filename', 'name']) || process.env.FILE_NAME || '';
-let fileUrl = findValue(clientPayload, ['file_url', 'WebUrl', 'Link', '{Link}', 'share_url', 'url', 'webUrl']) || '';
+let fileUrl = findValue(clientPayload, ['file_url', 'WebUrl', 'webUrl', 'Link', '{Link}', 'share_url', 'url']) || '';
 let rawContent = clientPayload.file_content || findValue(clientPayload, ['$content', 'content', 'file_content']) || process.env.FILE_CONTENT_BASE64 || '';
 
 console.log('📁 Ruta en OneDrive:', rawFilePath);
 console.log('📄 Nombre de archivo:', fileName);
-console.log('🔗 URL compartida de SharePoint:', fileUrl);
+console.log('🔗 URL compartida de SharePoint detectada:', fileUrl);
 
 // Identificar carpetas de EPS
 const epsDir = path.join(__dirname, 'eps');
@@ -57,13 +58,11 @@ function cleanName(str) {
 let targetFolder = '';
 const pathSegments = (rawFilePath || '').split(/[\\/]/).filter(p => p.trim() !== '');
 
-// Si la ruta contiene al menos un archivo y una carpeta padre
 if (pathSegments.length >= 2) {
-  const folderSegment = pathSegments[pathSegments.length - 2]; // El segmento inmediatamente anterior al archivo
+  const folderSegment = pathSegments[pathSegments.length - 2];
   const cleanSegment = cleanName(folderSegment);
   console.log(`Segmento de carpeta extraído: "${folderSegment}" (limpio: "${cleanSegment}")`);
 
-  // Buscar coincidencia exacta o más larga
   let bestMatch = '';
   let maxScore = 0;
 
@@ -84,7 +83,6 @@ if (pathSegments.length >= 2) {
   targetFolder = bestMatch;
 }
 
-// Fallback por nombre de archivo si el nombre del archivo contiene la EPS
 if (!targetFolder && fileName) {
   const cleanFile = cleanName(fileName);
   for (const folder of epsFolders) {
@@ -120,33 +118,45 @@ const isPdf = /\.pdf$/i.test(fileName || rawFilePath);
 const isHtml = /\.html$/i.test(fileName || rawFilePath);
 const isJson = /\.json$/i.test(fileName || rawFilePath);
 
-// CASO 1: Es un Logo / Imagen -> Actualizar logo_url con el link de SharePoint
-if (isImage && fileUrl) {
-  let finalImageUrl = fileUrl;
-  if (!finalImageUrl.includes('&download=1') && !finalImageUrl.includes('?download=1')) {
-    finalImageUrl += (finalImageUrl.includes('?') ? '&' : '?') + 'download=1';
+// CASO 1: Es un Logo / Imagen -> Actualizar logo_url
+if (isImage) {
+  if (fileUrl) {
+    let finalImageUrl = fileUrl;
+    if (!finalImageUrl.includes('&download=1') && !finalImageUrl.includes('?download=1')) {
+      finalImageUrl += (finalImageUrl.includes('?') ? '&' : '?') + 'download=1';
+    }
+    existingJson.logo_url = finalImageUrl;
+    fs.writeFileSync(infoJsonPath, JSON.stringify(existingJson, null, 2), 'utf8');
+    console.log(`🎉 ¡ÉXITO! Logo de ${targetFolder} actualizado con URL: ${finalImageUrl}`);
+  } else {
+    console.log(`⚠️ Se detectó imagen ${fileName}, pero file_url llegó vacía. Revisa Power Automate.`);
   }
-  existingJson.logo_url = finalImageUrl;
-  fs.writeFileSync(infoJsonPath, JSON.stringify(existingJson, null, 2), 'utf8');
-  console.log(`🎉 ¡ÉXITO! Logo de ${targetFolder} actualizado con URL: ${finalImageUrl}`);
 }
 
-// CASO 2: Es un Audio -> Actualizar audio_url con el link de SharePoint
-else if (isAudio && fileUrl) {
-  existingJson.audio_url = fileUrl;
-  fs.writeFileSync(infoJsonPath, JSON.stringify(existingJson, null, 2), 'utf8');
-  console.log(`🎉 ¡ÉXITO! Audio de ${targetFolder} actualizado con URL: ${fileUrl}`);
+// CASO 2: Es un Audio -> Actualizar audio_url
+else if (isAudio) {
+  if (fileUrl) {
+    existingJson.audio_url = fileUrl;
+    fs.writeFileSync(infoJsonPath, JSON.stringify(existingJson, null, 2), 'utf8');
+    console.log(`🎉 ¡ÉXITO! Audio de ${targetFolder} actualizado con URL: ${fileUrl}`);
+  } else {
+    console.log(`⚠️ Se detectó audio ${fileName}, pero file_url llegó vacía.`);
+  }
 }
 
-// CASO 3: Es un PDF -> Actualizar pdf_url con el link de SharePoint
-else if (isPdf && fileUrl) {
-  let finalPdfUrl = fileUrl;
-  if (!finalPdfUrl.includes('&download=1') && !finalPdfUrl.includes('?download=1')) {
-    finalPdfUrl += (finalPdfUrl.includes('?') ? '&' : '?') + 'download=1';
+// CASO 3: Es un PDF -> Actualizar pdf_url
+else if (isPdf) {
+  if (fileUrl) {
+    let finalPdfUrl = fileUrl;
+    if (!finalPdfUrl.includes('&download=1') && !finalPdfUrl.includes('?download=1')) {
+      finalPdfUrl += (finalPdfUrl.includes('?') ? '&' : '?') + 'download=1';
+    }
+    existingJson.pdf_url = finalPdfUrl;
+    fs.writeFileSync(infoJsonPath, JSON.stringify(existingJson, null, 2), 'utf8');
+    console.log(`🎉 ¡ÉXITO! PDF de ${targetFolder} actualizado con URL: ${finalPdfUrl}`);
+  } else {
+    console.log(`⚠️ Se detectó PDF ${fileName}, pero file_url llegó vacía.`);
   }
-  existingJson.pdf_url = finalPdfUrl;
-  fs.writeFileSync(infoJsonPath, JSON.stringify(existingJson, null, 2), 'utf8');
-  console.log(`🎉 ¡ÉXITO! PDF de ${targetFolder} actualizado con URL: ${finalPdfUrl}`);
 }
 
 // CASO 4: Es info.json o HTML -> Procesar contenido
