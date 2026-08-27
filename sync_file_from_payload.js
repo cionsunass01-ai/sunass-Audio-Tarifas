@@ -41,7 +41,6 @@ let rawContent = clientPayload.file_content || findValue(clientPayload, ['$conte
 // Si la ruta o nombre vienen en Base64 desde los headers de Power Automate, decodificarlos
 function maybeDecodeBase64(str) {
   if (!str) return '';
-  // Si no contiene barras ni puntos pero parece base64
   if (/^[A-Za-z0-9+/=]+$/.test(str) && !str.includes('/') && !str.includes('\\') && str.length > 8) {
     try {
       const decoded = Buffer.from(str, 'base64').toString('utf8');
@@ -110,6 +109,31 @@ if (!targetFolder && fileName) {
       break;
     }
   }
+}
+
+// Fallback inteligente: Si la ruta vino vacía pero el contenido es un JSON con "nombre", deducir la EPS desde el JSON
+if (!targetFolder && rawContent) {
+  try {
+    let contentStr = '';
+    try {
+      contentStr = Buffer.from(rawContent, 'base64').toString('utf8');
+    } catch (e) {
+      contentStr = String(rawContent);
+    }
+    const parsed = JSON.parse(contentStr);
+    const jsonName = parsed.nombre || parsed.name || parsed.key || '';
+    if (jsonName) {
+      const cleanJson = cleanName(jsonName);
+      console.log(`Deduciendo EPS desde el campo "nombre" del JSON: "${jsonName}" (limpio: "${cleanJson}")`);
+      for (const folder of epsFolders) {
+        const cleanFolder = cleanName(folder);
+        if (cleanJson === cleanFolder || cleanJson.includes(cleanFolder) || cleanFolder.includes(cleanJson)) {
+          targetFolder = folder;
+          break;
+        }
+      }
+    }
+  } catch (e) {}
 }
 
 if (!targetFolder) {
