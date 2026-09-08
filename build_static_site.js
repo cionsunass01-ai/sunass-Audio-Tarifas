@@ -78,9 +78,8 @@ function getFooterHtml(relativePathPrefix = './') {
         <img src="${relativePathPrefix}logo%20de%20Equipo%20CION.png" alt="Equipo CION" style="height: 48px; object-fit: contain;" />
       </div>
       <!-- Logo SUNASS -->
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <span style="color: #ffffff; font-size: 24px; font-weight: 700; font-family: 'Inter', sans-serif; letter-spacing: -0.5px;">Sunass</span>
-        <span style="color: rgba(255,255,255,0.6); font-size: 13px; font-family: 'Inter', sans-serif;">El regulador del agua potable</span>
+      <div style="display: flex; align-items: center; gap: 10px; position: relative; right: 5vw; bottom: 20px;">
+        <img src="${relativePathPrefix}sunass_logo2.png" alt="Sunass" style="height: 95px; object-fit: contain;" />
       </div>
     </div>
     <!-- Línea divisoria -->
@@ -101,7 +100,7 @@ function wrapInHtml(title, bodyContent, isMain = false, isSubfolder = false) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${title || 'AUDIO TARIFAS - SUNASS'}</title>
+  <title>${title || 'Estudios Tarifarios - SUNASS'}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -228,7 +227,8 @@ if (mainPageInfo) {
 
   var LOCAL_DOWNLOADS = JSON.parse(localStorage.getItem('sunass_downloads_v1') || '{}');
   var DOWNLOAD_RECORDS = {};
-  var FLOW_WEBHOOK_URL = '${POWER_AUTOMATE_WEBHOOK_URL}';
+  var _secreto = 'aHR0cHM6Ly81OWYyZWYxNDIyMDNlZTE3OWY5MWUyZDUyMDQyZTkuZWUuZW52aXJvbm1lbnQuYXBpLnBvd2VycGxhdGZvcm0uY29tOjQ0My9wb3dlcmF1dG9tYXRlL2F1dG9tYXRpb25zL2RpcmVjdC9jdS8wNy93b3JrZmxvd3MvZmYwYTM0ZjEyNWMxNDAwZWFkNzgwNTc5YzRjYWIzOTcvdHJpZ2dlcnMvbWFudWFsL3BhdGhzL2ludm9rZT9hcGktdmVyc2lvbj0xJnNwPSUyRnRyaWdnZXJzJTJGbWFudWFsJTJGcnVuJnN2PTEuMCZzaWc9ZkpBVlNfX0FqbGxWR1FCcGNHdnJnNFpFZFU1eDl5MGw2dTNiMWQ4alFIUQ==';
+  var FLOW_WEBHOOK_URL = atob(_secreto);
 
   function renderDownloadCount(key, count) {
     var span = document.getElementById('downloads-' + key);
@@ -281,7 +281,7 @@ if (mainPageInfo) {
   }
 
   // Write index.html with footer
-  const finalIndexHtml = wrapInHtml('AUDIO TARIFAS - SUNASS', mainHtml, true, false);
+  const finalIndexHtml = wrapInHtml('Estudios Tarifarios - SUNASS', mainHtml, true, false);
   fs.writeFileSync(path.join(DIST_DIR, 'index.html'), finalIndexHtml, 'utf-8');
   console.log('✅ Página principal actualizada con conexión en vivo a Dataverse: dist/index.html');
 }
