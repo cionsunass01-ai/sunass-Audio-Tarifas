@@ -101,7 +101,7 @@ function wrapInHtml(title, bodyContent, isMain = false, isSubfolder = false) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${title || 'Estudios Tarifarios - SUNASS'}</title>
+  <title>${title || 'AUDIO TARIFAS - SUNASS'}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -281,7 +281,7 @@ if (mainPageInfo) {
   }
 
   // Write index.html with footer
-  const finalIndexHtml = wrapInHtml('Estudios Tarifarios - SUNASS', mainHtml, true, false);
+  const finalIndexHtml = wrapInHtml('AUDIO TARIFAS - SUNASS', mainHtml, true, false);
   fs.writeFileSync(path.join(DIST_DIR, 'index.html'), finalIndexHtml, 'utf-8');
   console.log('✅ Página principal actualizada con conexión en vivo a Dataverse: dist/index.html');
 }
