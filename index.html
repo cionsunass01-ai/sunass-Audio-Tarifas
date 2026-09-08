@@ -343,7 +343,7 @@
     <div class="flex items-center space-x-4">
       <img src="./logo%20de%20Equipo%20CION.png" alt="Equipo CION" class="h-10 object-contain" />
       <div style="width: 1px; height: 28px; background: linear-gradient(180deg, transparent, var(--cyan-accent), transparent); margin: 0 4px;"></div>
-      <span style="font-family: 'Inter', sans-serif; font-size: 1.25rem; font-weight: 700; color: var(--navy); letter-spacing: -0.02em;">AUDIO TARIFAS</span>
+      <span style="font-family: 'Inter', sans-serif; font-size: 1.25rem; font-weight: 700; color: var(--navy); letter-spacing: -0.02em;">Estudio Tarifario</span>
     </div>
     <div class="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-3 relative w-full md:w-auto">
       <select id="eps-region-select" onchange="filterEpsCards()" class="w-full sm:w-auto pl-4 pr-8 py-2 border border-slate-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all cursor-pointer font-medium text-slate-600 bg-white shadow-sm" style="appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M5%207.5L10%2012.5L15%207.5%22%20stroke%3D%22%2364748B%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 8px center; background-size: 16px;">
@@ -394,7 +394,7 @@
     <main class="flex-1 space-y-6 w-full">
       <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-4">
         <div>
-          <h2 style="font-family: 'Inter', sans-serif; font-size: 1.75rem; font-weight: 800; color: var(--navy); letter-spacing: -0.03em; line-height: 1.2; margin: 0;">Catálogo de Estudios Tarifarios</h2>
+          <h2 style="font-family: 'Inter', sans-serif; font-size: 1.75rem; font-weight: 800; color: var(--navy); letter-spacing: -0.03em; line-height: 1.2; margin: 0;">Catálogo de Estudios</h2>
           <div style="display: flex; align-items: center; gap: 8px; margin-top: 6px;">
             <div style="width: 32px; height: 3px; border-radius: 2px; background: linear-gradient(90deg, var(--sunass-blue), var(--cyan-accent));"></div>
             <span style="font-size: 0.8rem; color: #64748b; font-weight: 400;">Estudios Tarifarios de las EPS del Perú</span>
@@ -2292,65 +2292,15 @@
   // Contador de descargas real, respaldado por la tabla Dataverse "Contador de Descargas"
   // (creada el 2026-07-22). Arranca en 0 para las 6 EPS y suma 1 por cada descarga real,
   // compartido entre todos los visitantes (no por navegador).
-  
-  // Base initial counts snapshot
-  var BASE_DOWNLOADS = {
-    'huaral': 20,
-    'limanorte': 4,
-    'hvca': 1,
-    'emapacop': 1,
-    'norpuno': 1,
-    'sedajuliaca': 1,
-    'emapay': 1,
-    'canete': 1,
-    'altiplano': 1,
-    'sierracentral': 1,
-    'calca': 1,
-    'epsel': 1,
-    'sanmartin': 1,
-    'pasco': 1,
-    'sedacaj': 1,
-    'ilo': 1,
-    'barranca': 1,
-    'maranon': 1,
-    'tumbes': 1,
-    'grau': 1,
-    'sedalib': 1,
-    'sedachimbote': 1,
-    'chavin': 1,
-    'sedapal': 1,
-    'ayacucho': 1,
-    'emapica': 1,
-    'emapavigs': 1,
-    'emapisco': 1,
-    'semapach': 1,
-    'emusap': 1,
-    'emapab': 1,
-    'epssmu': 1,
-    'sedaloreto': 1,
-    'rioja': 1,
-    'moyobamba': 1,
-    'sedahuanuco': 1,
-    'yauli': 1,
-    'mantaro': 1,
-    'sedamhuancayo': 1,
-    'selvacentral': 1,
-    'emapat': 1,
-    'sedacusco': 1,
-    'emaq': 1,
-    'empssapal': 1,
-    'emusapabancay': 1,
-    'emsapchanka': 1,
-    'sedapar': 1,
-    'moquegua': 1,
-    'tacna': 1,
-    'emsapuno': 1
-  };
+  var DV_ENTITY_SET = 'cr138_contadordedescargases';
+  var DV_ID_FIELD = 'cr138_contadordedescargasid';
+  var DV_NAME_FIELD = 'cr138_name';
+  var DV_COUNT_FIELD = 'cr138_descargas';
 
-  var LOCAL_DOWNLOADS = JSON.parse(localStorage.getItem('sunass_downloads_v1') || '{}');
+  // Se cachea id + conteo de cada fila al cargar, para no tener que volver a
+  // consultar con un $filter con comillas al hacer clic (el WAF del sitio bloquea
+  // comillas simples en la URL, por eso trackDownload ya no hace ninguna consulta).
   var DOWNLOAD_RECORDS = {};
-  var _secreto = 'aHR0cHM6Ly81OWYyZWYxNDIyMDNlZTE3OWY5MWUyZDUyMDQyZTkuZWUuZW52aXJvbm1lbnQuYXBpLnBvd2VycGxhdGZvcm0uY29tOjQ0My9wb3dlcmF1dG9tYXRlL2F1dG9tYXRpb25zL2RpcmVjdC9jdS8wNy93b3JrZmxvd3MvZmYwYTM0ZjEyNWMxNDAwZWFkNzgwNTc5YzRjYWIzOTcvdHJpZ2dlcnMvbWFudWFsL3BhdGhzL2ludm9rZT9hcGktdmVyc2lvbj0xJnNwPSUyRnRyaWdnZXJzJTJGbWFudWFsJTJGcnVuJnN2PTEuMCZzaWc9ZkpBVlNfX0FqbGxWR1FCcGNHdnJnNFpFZFU1eDl5MGw2dTNiMWQ4alFIUQ==';
-  var FLOW_WEBHOOK_URL = atob(_secreto);
 
   function renderDownloadCount(key, count) {
     var span = document.getElementById('downloads-' + key);
@@ -2359,42 +2309,101 @@
   }
 
   function loadDownloadCounts() {
-    var spans = document.querySelectorAll('span[id^="downloads-"]');
-    spans.forEach(function (span) {
-      var key = span.id.replace('downloads-', '');
-      var baseCount = BASE_DOWNLOADS[key] || 1;
-      var added = LOCAL_DOWNLOADS[key] || 0;
-      DOWNLOAD_RECORDS[key] = { count: baseCount + added };
-      renderDownloadCount(key, baseCount + added);
-    });
+    var url = '/_api/' + DV_ENTITY_SET + '?$select=' + DV_ID_FIELD + ',' + DV_NAME_FIELD + ',' + DV_COUNT_FIELD;
+    fetch(url, { headers: { 'Accept': 'application/json' } })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        (data.value || []).forEach(function (row) {
+          var key = row[DV_NAME_FIELD];
+          var count = row[DV_COUNT_FIELD] || 0;
+          DOWNLOAD_RECORDS[key] = { id: row[DV_ID_FIELD], count: count };
+        });
+        var spans = document.querySelectorAll('span[id^="downloads-"]');
+        spans.forEach(function (span) {
+          var key = span.id.replace('downloads-', '');
+          var record = DOWNLOAD_RECORDS[key];
+          var count = record ? record.count : 0;
+          renderDownloadCount(key, count);
+        });
+      })
+      .catch(function (err) {
+        console.error('No se pudo cargar el contador de descargas:', err);
+      });
+  }
+
+  function getRequestVerificationToken() {
+    return fetch('/_layout/tokenhtml', { credentials: 'same-origin' })
+      .then(function (response) { return response.text(); })
+      .then(function (html) {
+        var match = html.match(/name="__RequestVerificationToken"[^>]*value="([^"]+)"/) ||
+                    html.match(/value="([^"]+)"[^>]*name="__RequestVerificationToken"/);
+        return match ? match[1] : null;
+      });
   }
 
   function trackDownload(key) {
-    // 1. Optimistic instant UI update
-    LOCAL_DOWNLOADS[key] = (LOCAL_DOWNLOADS[key] || 0) + 1;
-    localStorage.setItem('sunass_downloads_v1', JSON.stringify(LOCAL_DOWNLOADS));
+    var record = DOWNLOAD_RECORDS[key];
+    var isNew = !record;
+    var newCount = isNew ? 1 : record.count + 1;
 
-    var current = (DOWNLOAD_RECORDS[key] && DOWNLOAD_RECORDS[key].count) || BASE_DOWNLOADS[key] || 1;
-    var newCount = current + 1;
-    if (!DOWNLOAD_RECORDS[key]) DOWNLOAD_RECORDS[key] = {};
-    DOWNLOAD_RECORDS[key].count = newCount;
+    if (isNew) {
+      record = { count: newCount };
+      DOWNLOAD_RECORDS[key] = record;
+    } else {
+      record.count = newCount;
+    }
+
     renderDownloadCount(key, newCount);
 
-    // 2. Real-time POST to Power Automate -> Updates Microsoft Dataverse Table
-    fetch(FLOW_WEBHOOK_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ eps: key })
-    }).then(function(res) {
-      console.log('✅ Descarga registrada exitosamente en Microsoft Dataverse:', key);
-    }).catch(function(err) {
-      console.warn('Registro en segundo plano procesado:', err);
+    getRequestVerificationToken().then(function (token) {
+      var headers = {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Accept': 'application/json',
+        'OData-MaxVersion': '4.0',
+        'OData-Version': '4.0'
+      };
+      if (token) { headers['__RequestVerificationToken'] = token; }
+      var body = {};
+      body[DV_COUNT_FIELD] = newCount;
+
+      if (isNew) {
+        body[DV_NAME_FIELD] = key;
+        return fetch('/_api/' + DV_ENTITY_SET, {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify(body)
+        }).then(function(res) {
+          if (res.ok) {
+            var entityId = res.headers.get('OData-EntityId');
+            if (entityId) {
+               var match = entityId.match(/\(([^)]+)\)/);
+               if (match) record.id = match[1];
+            }
+          }
+          return res;
+        });
+      } else {
+        return fetch('/_api/' + DV_ENTITY_SET + '(' + record.id + ')', {
+          method: 'PATCH',
+          headers: headers,
+          body: JSON.stringify(body)
+        });
+      }
+    }).then(function (response) {
+      if (!response || !response.ok) {
+        console.error('No se pudo guardar el contador de descargas en el servidor para', key);
+      }
+    }).catch(function (err) {
+      console.error('Error al registrar la descarga:', err);
     });
   }
-  
-  Object.keys(AUDIO_URLS).forEach(loadAudioDuration);
+
+  var epsKeys = Object.keys(AUDIO_URLS);
+  epsKeys.forEach(function(key, index) {
+    setTimeout(function() {
+      loadAudioDuration(key);
+    }, index * 250);
+  });
   loadDownloadCounts();
 
   function normalizeText(str) {
@@ -2508,12 +2517,10 @@
         <img src="./logo%20de%20Equipo%20CION.png" alt="Equipo CION" style="height: 48px; object-fit: contain;" />
       </div>
       <!-- Logo SUNASS -->
-      <div style="display: flex; align-items: center; gap: 10px; position: relative; right: 5vw; bottom: 20px;">
-        <img src="./sunass_logo2.png" alt="Sunass" style="height: 95px; object-fit: contain;" />
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="color: #ffffff; font-size: 24px; font-weight: 700; font-family: 'Inter', sans-serif; letter-spacing: -0.5px;">Sunass</span>
+        <span style="color: rgba(255,255,255,0.6); font-size: 13px; font-family: 'Inter', sans-serif;">El regulador del agua potable</span>
       </div>
-
-
-
     </div>
     <!-- Línea divisoria -->
     <div style="border-top: 1px solid rgba(255,255,255,0.12); padding-top: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">

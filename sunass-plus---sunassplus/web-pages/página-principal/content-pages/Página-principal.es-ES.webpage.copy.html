@@ -2364,7 +2364,12 @@
     });
   }
 
-  Object.keys(AUDIO_URLS).forEach(loadAudioDuration);
+  var epsKeys = Object.keys(AUDIO_URLS);
+  epsKeys.forEach(function(key, index) {
+    setTimeout(function() {
+      loadAudioDuration(key);
+    }, index * 250);
+  });
   loadDownloadCounts();
 
   function normalizeText(str) {
