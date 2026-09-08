@@ -274,7 +274,7 @@ if (mainPageInfo) {
   `;
 
   const startIdx = mainHtml.indexOf('var DV_ENTITY_SET =');
-  const endIdx = mainHtml.indexOf('Object.keys(AUDIO_URLS).forEach(loadAudioDuration);');
+  const endIdx = mainHtml.indexOf('var epsKeys = Object.keys(AUDIO_URLS);') !== -1 ? mainHtml.indexOf('var epsKeys = Object.keys(AUDIO_URLS);') : mainHtml.indexOf('Object.keys(AUDIO_URLS).forEach(loadAudioDuration);');
 
   if (startIdx !== -1 && endIdx !== -1) {
     mainHtml = mainHtml.substring(0, startIdx) + powerAutomateDownloadLogic + '\n  ' + mainHtml.substring(endIdx);
